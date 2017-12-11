@@ -3,7 +3,7 @@
 namespace App\Repositories;
 
  use App\Models\Address;
- use App\Models\Withdraw;
+ use App\Models\UserWithdraw;
  use App\Tools\Mention;
 use App\Notifications\GotVote;
 use App\Notifications\MentionedUser;
@@ -14,7 +14,7 @@ class WithdrawRepository
 
     protected $model;
 
-    public function __construct(Withdraw $withdraw)
+    public function __construct(UserWithdraw $withdraw)
     {
         $this->model = $withdraw;
     }

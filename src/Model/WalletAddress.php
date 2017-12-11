@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Models;
+namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
 
 class WalletAddress extends Model
 {
     public $timestamps = false;
-    protected $connection = 'mysql';
+
     protected $table = 'wallet_address';
     protected $fillable = [
-         'coin_type', 'address'
+         'coin_type', 'address','user_id'
     ];
     protected $guarded = [];
 }

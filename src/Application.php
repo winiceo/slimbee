@@ -37,12 +37,12 @@ class Application extends App
 
     public function getCacheDir()
     {
-        return $this->getRootDir().'/var/cache/'.$this->environment;
+        return $this->getRootDir() . '/var/cache/' . $this->environment;
     }
 
     public function getConfigurationDir()
     {
-        return $this->getRootDir().'/config';
+        return $this->getRootDir() . '/config';
     }
 
     public function getEnvironment()
@@ -52,7 +52,7 @@ class Application extends App
 
     public function getLogDir()
     {
-        return $this->getRootDir().'/var/log';
+        return $this->getRootDir() . '/var/log';
     }
 
     public function getRootDir()
@@ -67,20 +67,20 @@ class Application extends App
     protected function configureContainer()
     {
         $container = $this->getContainer();
-        require $this->getConfigurationDir().'/container.php';
+        require $this->getConfigurationDir() . '/container.php';
     }
 
     protected function loadConfiguration()
     {
         $app = $this;
         $configuration = [
-            'settings' => require $this->getConfigurationDir().'/slim.php'
+            'settings' => require $this->getConfigurationDir() . '/slim.php'
         ];
 
-        if (file_exists($this->getConfigurationDir().'/services.'.$this->getEnvironment().'.php')) {
-            $configuration['settings'] += require $this->getConfigurationDir().'/services.'.$this->getEnvironment().'.php';
+        if (file_exists($this->getConfigurationDir() . '/services.' . $this->getEnvironment() . '.php')) {
+            $configuration['settings'] += require $this->getConfigurationDir() . '/services.' . $this->getEnvironment() . '.php';
         } else {
-            $configuration['settings'] += require $this->getConfigurationDir().'/services.php';
+            $configuration['settings'] += require $this->getConfigurationDir() . '/services.php';
         }
 
         return $configuration;
@@ -90,21 +90,21 @@ class Application extends App
     {
         $app = $this;
         $container = $this->getContainer();
-        require $this->getConfigurationDir().'/middleware.php';
+        require $this->getConfigurationDir() . '/middleware.php';
     }
 
     protected function loadRoutes()
     {
         $app = $this;
         $container = $this->getContainer();
-        require $this->getConfigurationDir().'/routes.php';
+        require $this->getConfigurationDir() . '/routes.php';
     }
 
     protected function registerControllers()
     {
         $container = $this->getContainer();
-        if (file_exists($this->getConfigurationDir().'/controllers.php')) {
-            $controllers = require $this->getConfigurationDir().'/controllers.php';
+        if (file_exists($this->getConfigurationDir() . '/controllers.php')) {
+            $controllers = require $this->getConfigurationDir() . '/controllers.php';
             foreach ($controllers as $key => $class) {
                 $container[$key] = function ($container) use ($class) {
                     return new $class($container);
@@ -116,6 +116,6 @@ class Application extends App
     protected function registerHandlers()
     {
         $container = $this->getContainer();
-        require $this->getConfigurationDir().'/handlers.php';
+        require $this->getConfigurationDir() . '/handlers.php';
     }
 }

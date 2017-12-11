@@ -22,7 +22,9 @@ $capsule->setAsGlobal();
 $capsule->bootEloquent();
 
 $container['secret-key'] = 'sa9328343nd774788dhdhd-884747jjj99387jjhd-09';
-
+$container["jwt"] = function ($container) {
+    return new StdClass;
+};
 
 $container['auth'] = function ($container) {
     $sentinel = new Sentinel(new SentinelBootstrapper($container['settings']['sentinel']));

@@ -54,3 +54,8 @@ function C($key = NULL, $value = NULL)
     return isset($_config[$key]) ? $_config[$key] : NULL;
 }
 
+
+//生成验证码
+function generate_code($length = 6) {
+    return rand(pow(10,($length-1)), pow(10,$length)-1);
+}

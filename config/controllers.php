@@ -9,6 +9,7 @@ return [
     'api.order.controller'  => 'App\Controller\Api\OrderController',
     'api.chat.controller'  => 'App\Controller\Api\ChatController',
     'api.common.controller'  => 'App\Controller\Api\CommonController',
+    'api.wallet.controller'  => 'App\Controller\Api\WalletController',
 
 
 

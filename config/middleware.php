@@ -22,7 +22,12 @@ $container['jwt.middleware'] = function ($container) {
         "path" => "/api/v2",
         "algorithm" => ["HS256"],
         "passthrough" => ["/api/v2/user/login"],
-        "attribute" => "jwt"
+        "attribute" => "jwt",
+        "callback" => function ($request, $response, $arguments)use($container)   {
+
+            $container["jwt"] = $arguments["decoded"];
+
+        }
     ]);
 
 };

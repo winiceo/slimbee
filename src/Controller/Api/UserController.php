@@ -177,11 +177,6 @@ class UserController extends Controller
     }
 
 
-    public function address(Request $request, Response $response){
-        $user=$this->auth->getUser();
-        $address=UserWalletService::address($user);
-        return $this->json($response,$address);
-    }
 
 
 

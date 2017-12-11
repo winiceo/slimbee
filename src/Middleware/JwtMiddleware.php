@@ -38,7 +38,13 @@ class JwtMiddleware implements MiddlewareInterface
             "secret" => $this->container->get('secret-key'),
             "secure" => false,
             "algorithm" => [ "HS256" ],
-            "attribute" => "jwt"
+            "attribute" => "jwt",
+             "callback" => function ($request, $response, $arguments)   {
+             echo 555;
+                 $this->container["jwt"] = $arguments["decoded"];
+                 return true;
+
+             }
         ]);
 
         return $mw;

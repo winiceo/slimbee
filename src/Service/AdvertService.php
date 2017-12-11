@@ -26,12 +26,12 @@ class AdvertService
 
         return Advert::with("user")
             ->where(function ($query) use ($request) {
-                $trade_type = $request->getParam('trade_type', 0);
-                if($trade_type!==0) {
+                $trade_type = $request->getParam('trade_type', -1);
+                if($trade_type!==-1) {
                     $query->where('trade_type', $trade_type);
                 }
-                $coin_type = $request->getParam('coin_type', 0);
-                if($coin_type!==0){
+                $coin_type = $request->getParam('coin_type', -1);
+                if($coin_type!==-1){
                     $query->where('coin_type', $coin_type);
                 }
             })->orderBy($order_by, $desc==1?"desc":"asc")
@@ -49,12 +49,12 @@ class AdvertService
              where(function ($query) use ($request,$user) {
 
                 $query->where('user_id', $user->id);
-                $trade_type = $request->getParam('trade_type', 0);
-                if($trade_type!==0) {
+                $trade_type = $request->getParam('trade_type', -1);
+                if($trade_type!==-1) {
                     $query->where('trade_type', $trade_type);
                 }
-                $coin_type = $request->getParam('coin_type', 0);
-                if($coin_type!==0){
+                $coin_type = $request->getParam('coin_type', -1);
+                if($coin_type!==-1){
                     $query->where('coin_type', $coin_type);
                 }
             })->orderBy($order_by, $desc==1?"desc":"asc")

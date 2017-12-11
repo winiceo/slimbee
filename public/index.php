@@ -16,4 +16,13 @@ if (!isset($_SERVER['APP_ENV'])) {
 
 $app = new Application($_SERVER['APP_ENV'] ?? 'dev');
 
+//$app = new \Slim\App;
+$app->get('/tt/{name}', function ( $request,  $response,$args) {
+    // $name = $request->getAttribute('name');
+    // $response->getBody()->write("Hello, $name");
+
+    var_dump($args);
+
+    return $response;
+});
 $app->run();

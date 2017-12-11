@@ -4,7 +4,7 @@ use App\Exception\AccessDeniedException;
 use Slim\Handlers\NotAllowed;
 use Slim\Handlers\NotFound;
 use Slim\Handlers\PhpError;
-use Slim\Handlers\Strategies\RequestResponseArgs;
+use Slim\Handlers\Strategies\RequestResponse;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -20,7 +20,7 @@ $container['foundHandler'] = function ($container) {
     $request = $container['request'];
     $container['monolog']->info(sprintf('Matched route "%s /%s"', $request->getMethod(), ltrim($request->getUri()->getPath(), '/')));
 
-    return new RequestResponseArgs();
+     return new RequestResponse();
 };
 
 $container['csrfFailureHandler'] = function ($container) {

@@ -40,6 +40,7 @@
         "symfony/console": "^3.3",
         "symfony/dotenv": "^3.0",
         "symfony/http-foundation": "^3.3",
+        "symfony/validator": "^4.0",
         "tuupola/slim-jwt-auth": "^2.3"
     },
     "require-dev": {

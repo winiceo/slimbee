@@ -3,14 +3,14 @@
 
 $app->get('/', function($request, $response){
 
+
     return $response->withRedirect('/docs/', 301);
 
 });
 
 
-
 $app->group('/api/v2', function () use($container) {
-    $this->get('/test', 'api.test.controller:test') ;
+    $this->map(['GET', 'POST'],'/test', 'api.test.controller:test')  ;
 
     $this->post('/user/login', 'api.user.controller:login') ;
     $this->post('/user/register', 'api.user.controller:register') ;
@@ -18,17 +18,32 @@ $app->group('/api/v2', function () use($container) {
         $this->post('/profile', 'api.user.controller:profile') ;
         $this->post('/logout', 'api.user.controller:logout') ;
         $this->post('/safe/check', 'api.user.controller:check') ;
-        $this->get('/address', 'api.user.controller:address');
-        $this->get('/adverts', 'api.advert.controller:getByUser') ;
+
+        $this->post('/advert', 'api.advert.controller:getByUser') ;
     })->add($container['jwt.middleware']) ;
 
     $this->group('/finance', function () {
         $this->post('/depoist', 'api.user.controller:depoist') ;
         $this->post('/withdraw', 'api.user.controller:withdraw') ;
-
     }) ;
 
-    $this->group('/adverts', function () {
+
+    $this->group('/wallet', function () {
+        $this->post('/address', 'api.wallet.controller:address') ;
+        $this->post('/address/store', 'api.wallet.controller:storeAddress') ;
+        $this->post('/deposit/{id}', 'api.wallet.controller:deposit') ;
+
+
+        $this->post('/withdraw', 'api.wallet.controller:withdraw') ;
+        $this->post('/withdraw/history', 'api.wallet.controller:history') ;
+
+
+    })->add($container['jwt.middleware']) ;
+
+
+
+
+    $this->group('/advert', function () {
         $this->post('', 'api.advert.controller:overview') ;
         $this->post('/{id}', 'api.advert.controller:show') ;
     });
