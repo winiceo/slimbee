@@ -1,106 +1,64 @@
 <?php
+//首页暂时跳转
 
-use App\Rest\Router as RestRouter;
+$app->get('/', function($request, $response){
 
-$router = new RestRouter($container['router'], $container['settings']['rest']);
+    return $response->withRedirect('/docs/', 301);
 
-/**
- * CORS Pre-flight request.
- */
-$app->options('/{routes:.+}', function ($request, $response) {
-    return $response;
 });
 
-/**
- * Security.
- */
-$app->group('/', function () use ($container) {
-    $this->post('register', 'registration.controller:register')->setName('register');
-    $this->post('oauth/v2/token', 'token.controller:token')->setName('oauth_token');
-    $this->get('user', 'token.controller:user')
-        ->add($container['auth.middleware'])
-        ->setName('user');
-});
 
-$app->get('/', 'app.controller:root')->setName('root');
 
-/**
- *         URL          |           CONTROLLER            |     ROUTE
- * ---------------------|---------------------------------|----------------
- * GET /articles        | article.controller:getArticle    | get_articles
- * GET /articles/{id}   | article.controller:getArticles   | get_article
- * POST /articles       | article.controller:postArticle   | post_article
- * PUT /articles/{id}   | article.controller:putArticle    | put_article
- * DELETE /article/{id} | article.controller:deleteArticle | delete_article
- */
-$router->crud('articles', 'article.controller');
+$app->group('/api/v2', function () use($container) {
+    $this->get('/test', 'api.test.controller:test') ;
 
-// OR
+    $this->post('/user/login', 'api.user.controller:login') ;
+    $this->post('/user/register', 'api.user.controller:register') ;
+    $this->group('/user', function () {
+        $this->post('/profile', 'api.user.controller:profile') ;
+        $this->post('/logout', 'api.user.controller:logout') ;
+        $this->post('/safe/check', 'api.user.controller:check') ;
+        $this->get('/address', 'api.user.controller:address');
+        $this->get('/adverts', 'api.advert.controller:getByUser') ;
+    })->add($container['jwt.middleware']) ;
 
-/**
- * $router->cget('articles', 'article.controller');
- * $router->get('articles', 'article.controller');
- * $router->post('articles', 'article.controller');
- * $router->put('articles', 'article.controller');
- * $router->delete('articles', 'article.controller');
- */
+    $this->group('/finance', function () {
+        $this->post('/depoist', 'api.user.controller:depoist') ;
+        $this->post('/withdraw', 'api.user.controller:withdraw') ;
 
-// With options
-/**
- * $options = [
- *      'key' => 'id',
- *      'requirement' => '[0-9]+',
- *      'singular' => 'article'
- * ];
- *
- * $router->crud('articles', 'article.controller', [], $options);
- *
- * OR
- *
- * $router->get('articles', 'article.controller', $options);
- * ...
- */
+    }) ;
 
-/***********************************************************/
-/* -------------------- SUB RESOURCES -------------------- */
-/***********************************************************/
+    $this->group('/adverts', function () {
+        $this->post('', 'api.advert.controller:overview') ;
+        $this->post('/{id}', 'api.advert.controller:show') ;
+    });
 
-/**
- *                        URL                         |                   CONTROLLER                  |        ROUTE
- * ---------------------------------------------------|-----------------------------------------------|------------------------
- * GET /articles/{article_id}/comments                | article.comment.controller:getArticleComments   | get_article_comments
- * GET /articles/{article_id}/comments/{comment_id}   | article.comment.controller:getArticleComment    | get_article_comment
- * POST /articles/{article_id}/comments               | article.comment.controller:postArticleComment   | post_article_comment
- * PUT /articles/{article_id}/comments/{comment_id}   | article.comment.controller:putArticleComment    | put_article_comment
- * DELETE /article/{article_id}/comments/{comment_id} | article.comment.controller:deleteArticleComment | delete_article_comment
- */
-$router->subCrud('articles', 'comments', 'article.comment.controller');
+}) ;
 
-// OR
 
-/**
- * $router->cgetSub('articles', 'comments', 'article.controller');
- * $router->getSub('articles', 'comments', 'article.controller');
- * $router->postSub('articles', 'comments', 'article.controller');
- * $router->putSub('articles', 'comments', 'article.controller');
- * $router->deleteSub('articles', 'comments', 'article.controller');
- */
+$app->group('/chat', function () {
+    $this->post('/message/send', 'api.chat.controller:messageSend') ;
+    $this->post('/message/history', 'api.chat.controller:history') ;
+    $this->post('/upload', 'api.chat.controller:upload');
+}) ;
 
-// With options
-/**
- * $options = [
- *      'parent_key' => 'article_id',
- *      'parent_requirement' => '[0-9]+',
- *      'sub_key' => 'comment_id',
- *      'sub_requirement' => '[0-9]+',
- *      'parent_singular' => 'article',
- *      'sub_singular' => 'comment'
- * ];
- *
- * $router->subCrud('articles', 'comments', 'article.comment.controller', [], $options);
- *
- * OR
- *
- * $router->getSub('articles', 'comments', 'article.controller', $options);
- * ...
- */
+$app->group('/order', function () {
+
+    $this->post('/order/create', 'api.order.controller:create') ;
+    $this->post('/order/pay', 'api.order.controller:pay') ;
+    $this->post('/order/cancel', 'api.order.controller:cancel') ;
+    $this->post('/order/release', 'api.order.controller:release') ;
+    $this->post('/order/comment', 'api.order.controller:comment') ;
+    $this->post('/order/complaint', 'api.order.controller:complaint') ;
+
+
+}) ;
+
+
+
+
+
+
+
+
+

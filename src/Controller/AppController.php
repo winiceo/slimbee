@@ -7,14 +7,8 @@ use Slim\Http\Response;
 
 class AppController extends Controller
 {
-    public function root(Request $request, Response $response)
+    public function home(Request $request, Response $response)
     {
-        return $this->ok($response, [
-            'security' => [
-                'oauth_token' => $this->relativePath('oauth_token'),
-                'register'    => $this->relativePath('register'),
-                'user'        => $this->relativePath('user')
-            ]
-        ]);
+        return $this->twig->render($response, 'app/home.twig');
     }
 }

@@ -16,11 +16,10 @@ class User extends EloquentUser
         'password',
         'last_name',
         'first_name',
-        'permissions'
+        'permissions',
     ];
 
-    protected $loginNames = [
-        'username',
-        'email'
-    ];
+    protected $loginNames = ['username', 'email'];
+
+
 }

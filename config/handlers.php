@@ -1,165 +1,109 @@
 <?php
 
 use App\Exception\AccessDeniedException;
-use App\Exception\UnauthorizedException;
-use Slim\Exception\NotFoundException;
+use Slim\Handlers\NotAllowed;
+use Slim\Handlers\NotFound;
+use Slim\Handlers\PhpError;
 use Slim\Handlers\Strategies\RequestResponseArgs;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-return [
+/**
+ * Controller functions signature must be like:
+ *
+ * public function controllerAction($request, $response, $arg1, $arg2, $arg3, ...)
+ *
+ * https://www.slimframework.com/docs/objects/router.html#route-strategies
+ */
+$container['foundHandler'] = function ($container) {
+    /** @var Request $request */
+    $request = $container['request'];
+    $container['monolog']->info(sprintf('Matched route "%s /%s"', $request->getMethod(), ltrim($request->getUri()->getPath(), '/')));
 
-    /**
-     * Controller methods signature must be like:
-     *
-     * public function getCollection($request, $response, $arg1, $arg2, $args3, ...)
-     *
-     * https://www.slimframework.com/docs/objects/router.html#route-strategies
-     */
-    'foundHandler' => function ($container) {
-        /** @var Request $request */
-        $request = $container['request'];
-        $container['monolog']->info(sprintf('Matched route "%s /%s"', $request->getMethod(), ltrim($request->getUri()->getPath(), '/')));
+    return new RequestResponseArgs();
+};
 
-        return new RequestResponseArgs();
-    },
+$container['csrfFailureHandler'] = function ($container) {
+    return function (Request $request, Response $response) use ($container) {
+        $container['monolog']->error(sprintf('Failed CSRF check on "%s /%s"', $request->getMethod(), ltrim($request->getUri()->getPath(), '/')));
 
-    /**
-     * Returns an error in JSON when a NotFoundException is thrown.
-     */
-    'notFoundHandler' => function ($container) {
-        return function (Request $request, Response $response) use ($container) {
-            $container['monolog']->error(sprintf('No resource found for "%s /%s"', $request->getMethod(), ltrim($request->getUri()->getPath(), '/')));
+        $container['flash']->addMessage('error', 'Failed CSRF check');
 
-            return $response
-                ->withStatus(404)
-                ->withJson([
-                    'status' => 404,
-                    'message' => 'Resource not found.'
-                ]);
-        };
-    },
+        if ('prod' === $this->getEnvironment()) {
+            return $response->withRedirect($request->getUri()->getPath());
+        } else {
+            return $response->write('Failed CSRF check!');
+        }
+    };
+};
 
-    /**
-     * Returns an error in JSON when the HTTP method is not allowed.
-     */
-    'notAllowedHandler' => function ($container) {
-        return function (Request $request, Response $response, array $methods) use ($container) {
-            $allowedMethods = implode(', ', $methods);
+$container['notFoundHandler'] = function ($container) {
+    return function (Request $request, Response $response) use ($container) {
+        $container['monolog']->error(sprintf('No route found for "%s /%s"', $request->getMethod(), ltrim($request->getUri()->getPath(), '/')));
 
-            $container['monolog']->error(sprintf(
-                'No resource found for "%s /%s": Method not allowed (Allow: %s)',
-                $request->getMethod(),
-                ltrim($request->getUri()->getPath(), '/'),
-                $allowedMethods
-            ));
+        if ('prod' === $this->getEnvironment()) {
+            return $response->withStatus(404)->write($container['twig']->fetch('error/404.twig'));
+        } else {
+            return (new NotFound())($request, $response);
+        }
+    };
+};
 
-            if ($allowedMethods === 'OPTIONS') {
-                throw new NotFoundException($request, $response);
-            }
+$container['notAllowedHandler'] = function ($container) {
+    return function (Request $request, Response $response, array $methods) use ($container) {
+        $container['monolog']->error(sprintf(
+            'No route found for "%s /%s": Method not allowed (Allow: %s)',
+            $request->getMethod(),
+            ltrim($request->getUri()->getPath(), '/'),
+            implode(', ', $methods)
+        ));
 
-            return $response
-                ->withStatus(405)
-                ->withHeader('Allow', $allowedMethods)
-                ->withJson([
-                    'status' => 405,
-                    'message' => 'Method must be one of: '.$allowedMethods
-                ]);
-        };
-    },
+        if ('prod' === $this->getEnvironment()) {
+            return $response->withStatus(405)->write($container['twig']->fetch('error/4xx.twig'));
+        } else {
+            return (new NotAllowed())($request, $response, $methods);
+        }
+    };
+};
 
-    /**
-     * Returns an error in JSON when an UnauthorizedException is thrown.
-     */
-    'unauthorizedHandler' => function ($container) {
-        return function (Request $request, Response $response, Exception $exception) use ($container) {
-            $container['monolog']->debug('Unauthorized, the user is not authenticated', [
-                'exception' => $exception
-            ]);
+$container['accessDeniedHandler'] = function ($container) {
+    return function (Request $request, Response $response, AccessDeniedException $exception) use ($container) {
+        $container['monolog']->debug('Access denied, the user does not have access to this section', [
+            'exception' => $exception
+        ]);
 
-            return $response
-                ->withStatus($exception->getCode())
-                ->withJson([
-                    'status' => $exception->getCode(),
-                    'message' => $exception->getMessage()
-                ]);
-        };
-    },
+        return $response->withStatus(403)->write($container['twig']->fetch('error/403.twig'));
+    };
+};
 
-    /**
-     * Returns an error in JSON when an AccessDeniedException is thrown.
-     */
-    'accessDeniedHandler' => function ($container) {
-        return function (Request $request, Response $response, Exception $exception) use ($container) {
-            $container['monolog']->debug('Access denied, the user does not have access to this section', [
-                'exception' => $exception
-            ]);
+$container['errorHandler'] = function ($container) {
+    return function (Request $request, Response $response, Exception $exception) use ($container) {
+        if ($exception instanceof AccessDeniedException) {
+            return $container['accessDeniedHandler']($request, $response, $exception);
+        }
 
-            return $response
-                ->withStatus($exception->getCode())
-                ->withJson([
-                    'status' => $exception->getCode(),
-                    'message' => $exception->getMessage()
-                ]);
-        };
-    },
+        $container['monolog']->error('Uncaught PHP Exception '.get_class($exception), [
+            'exception' => $exception
+        ]);
 
-    /**
-     * Default Slim error handler.
-     */
-    'errorHandler' => function ($container) {
-        return function (Request $request, Response $response, Exception $exception) use ($container) {
-            if ($exception instanceof AccessDeniedException) {
-                return $container['accessDeniedHandler']($request, $response, $exception);
-            }
+        if ('prod' === $this->getEnvironment()) {
+            return $response->withStatus(500)->write($container['twig']->fetch('error/500.twig'));
+        } else {
+            return (new Slim\Handlers\Error(true))($request, $response, $exception);
+        }
+    };
+};
 
-            if ($exception instanceof UnauthorizedException) {
-                return $container['unauthorizedHandler']($request, $response, $exception);
-            }
+$container['phpErrorHandler'] = function ($container) {
+    return function (Request $request, Response $response, Throwable $error) use ($container) {
+        $container['monolog']->critical('Uncaught PHP Exception '.get_class($error), [
+            'exception' => $error
+        ]);
 
-            $container['monolog']->error('Uncaught PHP Exception '.get_class($exception), [
-                'exception' => $exception
-            ]);
-
-            $message = [
-                'status' => 500,
-                'message' => 'Internal Server Error.'
-            ];
-
-            if ('dev' === $this->getEnvironment()) {
-                $message['trace'] = $exception->getTrace();
-                $message['message'] = get_class($exception).': '.$exception->getMessage();
-            }
-
-            return $response
-                ->withStatus(500)
-                ->withJson($message);
-        };
-    },
-
-    /**
-     * PHP error handler.
-     */
-    'phpErrorHandler' => function ($container) {
-        return function (Request $request, Response $response, Throwable $error) use ($container) {
-            $container['monolog']->critical('Uncaught PHP Exception '.get_class($error), [
-                'exception' => $error
-            ]);
-
-            $message = [
-                'status' => 500,
-                'message' => 'Internal Server Error.'
-            ];
-
-            if ('dev' === $this->getEnvironment()) {
-                $message['trace'] = $error->getTrace();
-                $message['message'] = get_class($error).': '.$error->getMessage();
-            }
-
-            return $response
-                ->withStatus(500)
-                ->withJson($message);
-        };
-    }
-
-];
+        if ('prod' === $this->getEnvironment()) {
+            return $response->withStatus(500)->write($container['twig']->fetch('error/500.twig'));
+        } else {
+            return (new PhpError(true))($request, $response, $error);
+        }
+    };
+};

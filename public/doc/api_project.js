@@ -1,0 +1,1 @@
+define({  "name": "BeeOtc",  "version": "0.1.0",  "description": "Api 文档",  "title": "Api 文档",  "url": "http://localhost:8000",  "sampleUrl": false,  "defaultVersion": "0.0.0",  "apidoc": "0.3.0",  "generator": {    "name": "apidoc",    "time": "2017-12-11T01:32:24.193Z",    "url": "http://apidocjs.com",    "version": "0.17.6"  }});

@@ -1,12 +1,10 @@
 <?php
 
-use Monolog\Logger;
+$config = require $app->getConfigurationDir().'/services.php';
 
-$config = require __DIR__ . '/services.php';
+$config['twig']['options']['debug']       = true;
+$config['twig']['options']['auto_reload'] = true;
 
-// Used for generating links in API routes markdown.
-$config['rest']['url'] = 'http://localhost/slim-rest-base';
-
-$config['monolog']['level'] = Logger::DEBUG;
+$config['monolog']['level'] = Monolog\Logger::DEBUG;
 
 return $config;

@@ -1,12 +1,13 @@
 #!/usr/bin/env php
 <?php
 
+session_start();
+
 require __DIR__.'/../vendor/autoload.php';
 
 use App\Application;
-use App\Command\DatabaseCommand;
-use App\Command\RoutesCommand;
 use App\Command\CreateUserCommand;
+use App\Command\DatabaseCommand;
 use Symfony\Component\Console\Application as Console;
 use Symfony\Component\Dotenv\Dotenv;
 
@@ -17,13 +18,12 @@ if (!isset($_SERVER['APP_ENV'])) {
     (new Dotenv())->load(__DIR__.'/../.env');
 }
 
-$app = new Application('dev');
+$app = new Application($_SERVER['APP_ENV'] ?? 'dev');
 $container = $app->getContainer();
 
 $console = new Console();
 
-$console->add(new CreateUserCommand($container['sentinel']));
 $console->add(new DatabaseCommand());
-$console->add(new RoutesCommand($container['router'], $container['settings']['rest']));
+$console->add(new CreateUserCommand($container['auth']));
 
 $console->run();

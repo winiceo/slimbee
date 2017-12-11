@@ -16,7 +16,7 @@ class CreateUserCommand extends Command
     /**
      * @var Sentinel
      */
-    protected $sentinel;
+    private $sentinel;
 
     /**
      * Constructor.

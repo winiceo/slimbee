@@ -1,39 +1,65 @@
 <?php
 
-use App\Storage\Pdo;
+use App\Twig\AssetExtension;
+use App\Twig\CsrfExtension;
 use Awurth\SlimValidation\Validator;
+use Awurth\SlimValidation\ValidatorExtension;
 use Cartalyst\Sentinel\Native\Facades\Sentinel;
 use Cartalyst\Sentinel\Native\SentinelBootstrapper;
 use Illuminate\Database\Capsule\Manager;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Monolog\Processor\UidProcessor;
-use OAuth2\Server;
-use OAuth2\GrantType\RefreshToken;
-use OAuth2\GrantType\UserCredentials;
+use Slim\Csrf\Guard;
+use Slim\Flash\Messages;
+use Slim\Views\Twig;
+use Slim\Views\TwigExtension;
+use Twig\Extension\DebugExtension;
 
 $capsule = new Manager();
 $capsule->addConnection($container['settings']['eloquent']);
 $capsule->setAsGlobal();
 $capsule->bootEloquent();
 
-$container['sentinel'] = function ($container) {
+$container['secret-key'] = 'sa9328343nd774788dhdhd-884747jjj99387jjhd-09';
+
+
+$container['auth'] = function ($container) {
     $sentinel = new Sentinel(new SentinelBootstrapper($container['settings']['sentinel']));
     return $sentinel->getSentinel();
 };
 
-$container['oauth'] = function ($container) use ($capsule) {
-    $storage = new Pdo($capsule->getConnection()->getPdo(), $container['settings']['oauth']['pdo']);
-
-    $server = new Server($storage);
-    $server->addGrantType(new UserCredentials($storage));
-    $server->addGrantType(new RefreshToken($storage));
-
-    return $server;
+$container['flash'] = function () {
+    return new Messages();
 };
 
+$container['csrf'] = function ($container) {
+    $guard = new Guard();
+    $guard->setFailureCallable($container['csrfFailureHandler']);
+
+    return $guard;
+};
+
+// https://github.com/awurth/SlimValidation
 $container['validator'] = function () {
-    return new Validator(false);
+    return new Validator();
+};
+
+$container['twig'] = function ($container) {
+    $config = $container['settings']['twig'];
+
+    $twig = new Twig($config['path'], $config['options']);
+
+    $twig->addExtension(new TwigExtension($container['router'], $container['request']->getUri()));
+    $twig->addExtension(new DebugExtension());
+    $twig->addExtension(new CsrfExtension($container['csrf']));
+    $twig->addExtension(new ValidatorExtension($container['validator']));
+    $twig->addExtension(new AssetExtension($container['request']));
+
+    $twig->getEnvironment()->addGlobal('flash', $container['flash']);
+    $twig->getEnvironment()->addGlobal('auth', $container['auth']);
+
+    return $twig;
 };
 
 $container['monolog'] = function ($container) {

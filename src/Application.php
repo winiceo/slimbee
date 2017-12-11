@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Psr\Container\ContainerInterface;
 use Slim\App;
 
 class Application extends App
@@ -27,7 +28,6 @@ class Application extends App
         $this->rootDir = $this->getRootDir();
 
         parent::__construct($this->loadConfiguration());
-
         $this->configureContainer();
         $this->registerHandlers();
         $this->loadMiddleware();
@@ -116,9 +116,6 @@ class Application extends App
     protected function registerHandlers()
     {
         $container = $this->getContainer();
-        $handlers = require $this->getConfigurationDir().'/handlers.php';
-        foreach ($handlers as $name => $callable) {
-            $container[$name] = $callable;
-        }
+        require $this->getConfigurationDir().'/handlers.php';
     }
 }

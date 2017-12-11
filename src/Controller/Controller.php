@@ -3,25 +3,32 @@
 namespace App\Controller;
 
 use App\Exception\AccessDeniedException;
-use App\Exception\UnauthorizedException;
 use Awurth\SlimValidation\Validator;
 use Cartalyst\Sentinel\Sentinel;
-use OAuth2\Server;
+use Monolog\Logger;
 use Psr\Container\ContainerInterface;
+use Slim\Csrf\Guard;
 use Slim\Exception\NotFoundException;
+use Slim\Flash\Messages;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Router;
+use Slim\Views\Twig;
 
 /**
- * @property Server    oauth
+ * @property Guard     csrf
+ * @property Logger    monolog
+ * @property Messages  flash
  * @property Router    router
- * @property Sentinel  sentinel
+ * @property Sentinel  auth
+ * @property Twig      twig
  * @property Validator validator
  */
 abstract class Controller
 {
     /**
+     * Slim application container.
+     *
      * @var ContainerInterface
      */
     protected $container;
@@ -37,33 +44,13 @@ abstract class Controller
     }
 
     /**
-     * Throws an AccessDeniedException if user doesn't have the required role.
-     *
-     * @param string $role
-     *
-     * @throws AccessDeniedException
-     */
-    protected function requireRole($role)
-    {
-        $user = $this->sentinel->getUser();
-
-        if (null === $user) {
-            throw $this->unauthorizedException();
-        }
-
-        if (!$user->inRole($role)) {
-            throw $this->accessDeniedException('Access denied: User must have role '.$role);
-        }
-    }
-
-    /**
      * Gets request parameters.
      *
      * @param Request  $request
      * @param string[] $params
-     * @param mixed    $default
+     * @param string   $default
      *
-     * @return array
+     * @return string[]
      */
     protected function params(Request $request, array $params, $default = null)
     {
@@ -73,34 +60,6 @@ abstract class Controller
         }
 
         return $data;
-    }
-
-    /**
-     * Generates a URL from a route.
-     *
-     * @param string $route
-     * @param array  $params
-     * @param array  $queryParams
-     *
-     * @return string
-     */
-    protected function path($route, array $params = [], array $queryParams = [])
-    {
-        return $this->router->pathFor($route, $params, $queryParams);
-    }
-
-    /**
-     * Generates a relative URL from a route.
-     *
-     * @param string $route
-     * @param array  $params
-     * @param array  $queryParams
-     *
-     * @return string
-     */
-    protected function relativePath($route, array $params = [], array $queryParams = [])
-    {
-        return $this->router->relativePathFor($route, $params, $queryParams);
     }
 
     /**
@@ -128,57 +87,6 @@ abstract class Controller
     protected function redirectTo(Response $response, $url)
     {
         return $response->withRedirect($url);
-    }
-
-    /**
-     * Returns a "200 Ok" response with JSON data.
-     *
-     * @param Response $response
-     * @param mixed    $data
-     *
-     * @return Response
-     */
-    protected function ok(Response $response, $data)
-    {
-        return $this->json($response, $data);
-    }
-
-    /**
-     * Returns a "201 Created" response with a location header.
-     *
-     * @param Response $response
-     * @param string   $route
-     * @param array    $params
-     *
-     * @return Response
-     */
-    protected function created(Response $response, $route, array $params = [])
-    {
-        return $this->redirect($response, $route, $params)->withStatus(201);
-    }
-
-    /**
-     * Returns a "204 No Content" response.
-     *
-     * @param Response $response
-     *
-     * @return Response
-     */
-    protected function noContent(Response $response)
-    {
-        return $response->withStatus(204);
-    }
-
-    /**
-     * Returns validation errors as a JSON array.
-     *
-     * @param Response $response
-     *
-     * @return Response
-     */
-    protected function validationErrors(Response $response)
-    {
-        return $this->json($response, $this->validator->getErrors(), 400);
     }
 
     /**
@@ -210,6 +118,17 @@ abstract class Controller
     }
 
     /**
+     * Adds a flash message.
+     *
+     * @param string $name
+     * @param string $message
+     */
+    protected function flash($name, $message)
+    {
+        $this->flash->addMessage($name, $message);
+    }
+
+    /**
      * Creates a new NotFoundException.
      *
      * @param Request  $request
@@ -223,27 +142,16 @@ abstract class Controller
     }
 
     /**
-     * Creates a new UnauthorizedException.
-     *
-     * @param string $message
-     *
-     * @return UnauthorizedException
-     */
-    protected function unauthorizedException($message = 'Unauthorized.')
-    {
-        return new UnauthorizedException($message);
-    }
-
-    /**
      * Creates a new AccessDeniedException.
      *
-     * @param string $message
+     * @param Request  $request
+     * @param Response $response
      *
      * @return AccessDeniedException
      */
-    protected function accessDeniedException($message = 'Access Denied.')
+    protected function accessDeniedException(Request $request, Response $response)
     {
-        return new AccessDeniedException($message);
+        return new AccessDeniedException($request, $response);
     }
 
     /**
