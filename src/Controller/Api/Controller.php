@@ -16,12 +16,12 @@ use Slim\Router;
 use Slim\Views\Twig;
 
 /**
- * @property Guard     csrf
- * @property Logger    monolog
- * @property Messages  flash
- * @property Router    router
- * @property Sentinel  auth
- * @property Twig      twig
+ * @property Guard csrf
+ * @property Logger monolog
+ * @property Messages flash
+ * @property Router router
+ * @property Sentinel auth
+ * @property Twig twig
  * @property Validator validator
  */
 abstract class Controller
@@ -35,6 +35,11 @@ abstract class Controller
 
     protected $user;
 
+    protected $code = 200;
+
+    protected $data = [];
+    protected $message='';
+
     /**
      * Constructor.
      *
@@ -43,15 +48,15 @@ abstract class Controller
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-        $this->user=$this->auth->getUser();
+        $this->user = $this->auth->getUser();
     }
 
     /**
      * Gets request parameters.
      *
-     * @param Request  $request
+     * @param Request $request
      * @param string[] $params
-     * @param string   $default
+     * @param string $default
      *
      * @return string[]
      */
@@ -69,8 +74,8 @@ abstract class Controller
      * Redirects to a route.
      *
      * @param Response $response
-     * @param string   $route
-     * @param array    $params
+     * @param string $route
+     * @param array $params
      *
      * @return Response
      */
@@ -83,7 +88,7 @@ abstract class Controller
      * Redirects to a url.
      *
      * @param Response $response
-     * @param string   $url
+     * @param string $url
      *
      * @return Response
      */
@@ -96,14 +101,23 @@ abstract class Controller
      * Writes JSON in the response body.
      *
      * @param Response $response
-     * @param mixed    $data
-     * @param int      $status
+     * @param mixed $data
+     * @param int $status
      *
      * @return Response
      */
     protected function json(Response $response, $data, $status = 200)
     {
-        return $response->withJson($data, $status);
+        $this->setCode($status);
+        $this->setMessage("");
+        $this->setData($data);
+        return $response->withJson($this->formatResponse(), $status);
+    }
+
+    protected function success(Response $response, $data, $status = 200)
+    {
+
+        return $response->withJson($this->formatResponse(), $status);
     }
 
 
@@ -117,13 +131,40 @@ abstract class Controller
     {
         return $this->json($response, $this->validator->getErrors(), 400);
     }
+    public function getErrorMessage(){
+        $errors=(array)$this->validator->getErrors();
+        $message = $this->getMessage(array_keys($errors)[0]);
+        return $message;
+    }
+
+    public function getMessage($key){
+        $data=[
+            'username'=>'用户名错误',
+            'password'=>'密码格式'
+        ];
+        return $data[$key];
+    }
+
+    protected function fail(Response $response, $message=null, $status = 400)
+    {
+
+        if(!$message){
+            $message=$this->getErrorMessage();
+
+        }
+        $this->setCode($status);
+        $this->setMessage($message);
+        return $response->withJson($this->formatResponse(), $status);
+    }
+
+
 
     /**
      * Writes text in the response body.
      *
      * @param Response $response
-     * @param string   $data
-     * @param int      $status
+     * @param string $data
+     * @param int $status
      *
      * @return int
      */
@@ -146,7 +187,7 @@ abstract class Controller
     /**
      * Creates a new NotFoundException.
      *
-     * @param Request  $request
+     * @param Request $request
      * @param Response $response
      *
      * @return NotFoundException
@@ -159,7 +200,7 @@ abstract class Controller
     /**
      * Creates a new AccessDeniedException.
      *
-     * @param Request  $request
+     * @param Request $request
      * @param Response $response
      *
      * @return AccessDeniedException
@@ -180,4 +221,39 @@ abstract class Controller
     {
         return $this->container->get($property);
     }
+
+
+    public function setCode($code)
+    {
+        $this->code = $code;
+
+        return $this;
+    }
+
+    public function setMessage($msg)
+    {
+        $this->message = $msg;
+
+        return $this;
+    }
+
+    public function setData($data)
+    {
+        $this->data = $data;
+
+        return $this;
+    }
+
+
+
+
+    public function formatResponse()
+    {
+        return [
+            'code' => $this->code,
+            'message' => $this->message,
+            'data' => $this->data
+        ];
+    }
+
 }

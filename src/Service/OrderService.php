@@ -9,8 +9,7 @@
 namespace App\Service;
 
 
-use App\Models\Order;
-use App\Models\UserBalance;
+use App\Model\Order;
 use App\Repositories\OrderRepository;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
@@ -27,6 +26,11 @@ class OrderService
 
         $this->order = $order;
 
+    }
+
+    public function store($data){
+        $ret =  Order::create($data);
+        return $ret;
     }
 
 

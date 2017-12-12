@@ -1,1 +1,0 @@
-apidoc -i src/Controller/Api -o public/doc/

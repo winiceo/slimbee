@@ -1,5 +1,4 @@
 <?php
-
 use App\Application;
 use Symfony\Component\Dotenv\Dotenv;
 
@@ -14,15 +13,26 @@ if (!isset($_SERVER['APP_ENV'])) {
     (new Dotenv())->load(__DIR__.'/../.env');
 }
 
+
+function C($key = NULL, $value = NULL)
+{
+    static $_config = array();
+
+    if (is_array($key)) {
+        return $_config = array_merge($_config,  ($key));
+    }
+    $key =  ($key);
+    if (!is_null($value)) {
+        return $_config[$key] = $value;
+    }
+    if (empty($key)) {
+        return $_config;
+    }
+    return isset($_config[$key]) ? $_config[$key] : NULL;
+}
+
+
 $app = new Application($_SERVER['APP_ENV'] ?? 'dev');
 
-//$app = new \Slim\App;
-$app->get('/tt/{name}', function ( $request,  $response,$args) {
-    // $name = $request->getAttribute('name');
-    // $response->getBody()->write("Hello, $name");
 
-    var_dump($args);
-
-    return $response;
-});
 $app->run();

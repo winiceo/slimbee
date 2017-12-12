@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Models;
+namespace App\Model;
 
-use models;
+
 
 /**
  * @property integer $id [TYPE=INTEGER, NULLABLE=0, DEFAULT=""]
@@ -19,8 +19,7 @@ class Chat extends Model
 {
     // Attributes.
     public $timestamps = false;
-    protected $connection = 'mysql';
-    protected $table = 'chat';
+     protected $table = 'chat';
     protected $fillable = [
         'order_id', 'message'
     ];

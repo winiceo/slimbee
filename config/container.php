@@ -1,75 +1,25 @@
 <?php
 
-use App\Twig\AssetExtension;
-use App\Twig\CsrfExtension;
-use Awurth\SlimValidation\Validator;
-use Awurth\SlimValidation\ValidatorExtension;
-use Cartalyst\Sentinel\Native\Facades\Sentinel;
-use Cartalyst\Sentinel\Native\SentinelBootstrapper;
-use Illuminate\Database\Capsule\Manager;
-use Monolog\Handler\StreamHandler;
-use Monolog\Logger;
-use Monolog\Processor\UidProcessor;
-use Slim\Csrf\Guard;
-use Slim\Flash\Messages;
-use Slim\Views\Twig;
-use Slim\Views\TwigExtension;
-use Twig\Extension\DebugExtension;
 
-$capsule = new Manager();
-$capsule->addConnection($container['settings']['eloquent']);
-$capsule->setAsGlobal();
-$capsule->bootEloquent();
+$definitions = [
+    'settings.responseChunkSize' => 4096,
+    'settings.outputBuffering' => 'append',
+    'settings.determineRouteBeforeAppMiddleware' => false,
+    'settings.displayErrorDetails' => false,
+];
 
-$container['secret-key'] = 'sa9328343nd774788dhdhd-884747jjj99387jjhd-09';
-$container["jwt"] = function ($container) {
-    return new StdClass;
-};
+$definitions[\Slim\Views\Twig::class] = function (\Psr\Container\ContainerInterface $c)
+{
+    $twig = new \Slim\Views\Twig($c->get('templates'), [
+        'cache' => $c->get('cache')."/twig/"
+    ]);
 
-$container['auth'] = function ($container) {
-    $sentinel = new Sentinel(new SentinelBootstrapper($container['settings']['sentinel']));
-    return $sentinel->getSentinel();
-};
-
-$container['flash'] = function () {
-    return new Messages();
-};
-
-$container['csrf'] = function ($container) {
-    $guard = new Guard();
-    $guard->setFailureCallable($container['csrfFailureHandler']);
-
-    return $guard;
-};
-
-// https://github.com/awurth/SlimValidation
-$container['validator'] = function () {
-    return new Validator();
-};
-
-$container['twig'] = function ($container) {
-    $config = $container['settings']['twig'];
-
-    $twig = new Twig($config['path'], $config['options']);
-
-    $twig->addExtension(new TwigExtension($container['router'], $container['request']->getUri()));
-    $twig->addExtension(new DebugExtension());
-    $twig->addExtension(new CsrfExtension($container['csrf']));
-    $twig->addExtension(new ValidatorExtension($container['validator']));
-    $twig->addExtension(new AssetExtension($container['request']));
-
-    $twig->getEnvironment()->addGlobal('flash', $container['flash']);
-    $twig->getEnvironment()->addGlobal('auth', $container['auth']);
+    $twig->addExtension(new \Slim\Views\TwigExtension(
+        $c->get('router'),
+        $c->get('request')->getUri()
+    ));
 
     return $twig;
 };
 
-$container['monolog'] = function ($container) {
-    $config = $container['settings']['monolog'];
 
-    $logger = new Logger($config['name']);
-    $logger->pushProcessor(new UidProcessor());
-    $logger->pushHandler(new StreamHandler($config['path'], $config['level']));
-
-    return $logger;
-};

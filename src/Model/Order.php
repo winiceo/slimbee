@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Model;
 use App\User;
 
 
@@ -27,7 +27,6 @@ class Order extends Model
 {
     // Attributes.
     public $timestamps = false;
-    protected $connection = 'mysql';
     protected $table = 'orders';
     protected $fillable = [
         'id', 'order_code', 'ad_id', 'ad_code', 'ad_user_id', 'user_id', 'ad_price', 'amount', 'qty', 'payterm',

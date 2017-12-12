@@ -2,7 +2,9 @@
 
 namespace App;
 
+
 use Psr\Container\ContainerInterface;
+use DI\ContainerBuilder;
 use Slim\App;
 
 class Application extends App
@@ -27,13 +29,46 @@ class Application extends App
         $this->environment = $environment;
         $this->rootDir = $this->getRootDir();
 
-        parent::__construct($this->loadConfiguration());
-        $this->configureContainer();
-        $this->registerHandlers();
-        $this->loadMiddleware();
-        $this->registerControllers();
+        $containerBuilder = new ContainerBuilder;
+        C('root',$this->rootDir);
+        C('templates',$this->rootDir.'/templates');
+        C('cache',$this->rootDir.'/var/cache/twig');
+        C('environment',$environment);
+        C($this->loadConfiguration());
+
+         $containerBuilder->addDefinitions($this->loadConfiguration() );
+//    var_dump($this->loadConfiguration());
+//    exit;
+         $containerBuilder->addDefinitions($this->getConfigurationDir() . '/container.php');
+         $containerBuilder->addDefinitions($this->getConfigurationDir() . '/handlers.php');
+        $containerBuilder->useAnnotations(true);
+
+        $container = $containerBuilder->build();
+        //$container->set('api.test.controller',    'App\Controller\Api\TestController');
+
+        $this->registerControllers($container);
+        parent::__construct($container);
+
+        $container->set('api.test.controller',    'App\Controller\Api\TestController');
+       // $this->configureContainer($containerBuilder);
+
+
+        //$this->registerHandlers();
+        //$this->loadMiddleware();
+
         $this->loadRoutes();
     }
+
+    protected function configureContainer(ContainerBuilder $builder)
+    {
+        $rootDir = $this->rootDir;
+        $container = $this->getContainer();
+
+       //require $this->getConfigurationDir() . '/container.php';
+       $builder->addDefinitions($this->getConfigurationDir() . '/container.php');
+
+    }
+
 
     public function getCacheDir()
     {
@@ -42,7 +77,7 @@ class Application extends App
 
     public function getConfigurationDir()
     {
-        return $this->getRootDir() . '/config';
+        return $this->getRootDir() . '/config/api';
     }
 
     public function getEnvironment()
@@ -64,18 +99,15 @@ class Application extends App
         return $this->rootDir;
     }
 
-    protected function configureContainer()
-    {
-        $container = $this->getContainer();
-        require $this->getConfigurationDir() . '/container.php';
-    }
 
     protected function loadConfiguration()
     {
         $app = $this;
-        $configuration = [
-            'settings' => require $this->getConfigurationDir() . '/slim.php'
-        ];
+//        $configuration = [
+//            'settings' => require $this->getConfigurationDir() . '/slim.php'
+//        ];
+
+        $configuration=require $this->getConfigurationDir() . '/config.php';
 
         if (file_exists($this->getConfigurationDir() . '/services.' . $this->getEnvironment() . '.php')) {
             $configuration['settings'] += require $this->getConfigurationDir() . '/services.' . $this->getEnvironment() . '.php';
@@ -85,6 +117,7 @@ class Application extends App
 
         return $configuration;
     }
+
 
     protected function loadMiddleware()
     {
@@ -97,18 +130,18 @@ class Application extends App
     {
         $app = $this;
         $container = $this->getContainer();
-        require $this->getConfigurationDir() . '/routes.php';
+        require $this->getConfigurationDir() . '/api.php';
     }
 
-    protected function registerControllers()
+    protected function registerControllers($container)
     {
-        $container = $this->getContainer();
+       // $container = $this->getContainer();
         if (file_exists($this->getConfigurationDir() . '/controllers.php')) {
             $controllers = require $this->getConfigurationDir() . '/controllers.php';
             foreach ($controllers as $key => $class) {
-                $container[$key] = function ($container) use ($class) {
+                $container->set($key,function ($container) use ($class) {
                     return new $class($container);
-                };
+                });
             }
         }
     }

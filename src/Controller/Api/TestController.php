@@ -12,6 +12,13 @@ use Respect\Validation\Validator as V;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
+use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Validator\Validation;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
+
+
+
 class TestController extends Controller
 {
 
@@ -24,6 +31,22 @@ class TestController extends Controller
 
              WalletAddress::create($data);
          }
+    }
+
+    public function ok(){
+
+        $validator = Validation::createValidator();
+        $violations = $validator->validate('Bernhard', array(
+            new Length(array('min' => 10)),
+            new Email(),
+        ));
+
+        if (0 !== count($violations)) {
+            // there are errors, now you can show them
+            foreach ($violations as $violation) {
+                echo $violation->getMessage().'<br>';
+            }
+        }
     }
 
 }

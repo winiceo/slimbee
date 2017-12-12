@@ -1,12 +1,10 @@
+###> symfony/framework-bundle ###
 .env
-vendor/
-node_modules/
-public/assets/lib/
-var/cache/*
-!var/cache/.gitkeep
-var/log/*
-!var/log/.gitkeep
-public/assets/css/*
-!public/assets/css/.gitkeep
-public/assets/js/*
-!public/assets/js/.gitkeep
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+###> symfony/web-server-bundle ###
+.web-server-pid
+###< symfony/web-server-bundle ###

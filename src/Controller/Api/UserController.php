@@ -160,7 +160,7 @@ class UserController extends Controller
             }
         }
 
-        return $this->error($response);
+        return $this->fail($response);
     }
 
     public function logout(Request $request, Response $response)

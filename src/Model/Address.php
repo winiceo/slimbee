@@ -1,16 +1,15 @@
 <?php
 
-namespace App\Models;
+namespace App\Model;
 
-use App\Tools\Markdowner;
+
 use App\User;
-use Jcc\LaravelVote\CanBeVoted;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Address extends Model
 {
-    use SoftDeletes, CanBeVoted;
+    use SoftDeletes;
 
 
     const TABLE = 'user_wallet';
