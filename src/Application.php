@@ -3,6 +3,7 @@
 namespace App;
 
 
+use App\Controller\Api\TestController;
 use Psr\Container\ContainerInterface;
 use DI\ContainerBuilder;
 use Slim\App;
@@ -46,15 +47,15 @@ class Application extends App
         $container = $containerBuilder->build();
         //$container->set('api.test.controller',    'App\Controller\Api\TestController');
 
-        $this->registerControllers($container);
         parent::__construct($container);
+        $this->registerControllers($container);
 
-        $container->set('api.test.controller',    'App\Controller\Api\TestController');
+
        // $this->configureContainer($containerBuilder);
 
 
         //$this->registerHandlers();
-        //$this->loadMiddleware();
+        $this->loadMiddleware();
 
         $this->loadRoutes();
     }
@@ -139,9 +140,7 @@ class Application extends App
         if (file_exists($this->getConfigurationDir() . '/controllers.php')) {
             $controllers = require $this->getConfigurationDir() . '/controllers.php';
             foreach ($controllers as $key => $class) {
-                $container->set($key,function ($container) use ($class) {
-                    return new $class($container);
-                });
+                $container->set($key,$class);
             }
         }
     }

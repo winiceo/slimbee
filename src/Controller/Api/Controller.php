@@ -5,8 +5,8 @@ namespace App\Controller\Api;
 use App\Exception\AccessDeniedException;
 use Awurth\SlimValidation\Validator;
 use Cartalyst\Sentinel\Sentinel;
+use Interop\Container\ContainerInterface;
 use Monolog\Logger;
-use Psr\Container\ContainerInterface;
 use Slim\Csrf\Guard;
 use Slim\Exception\NotFoundException;
 use Slim\Flash\Messages;
@@ -38,7 +38,7 @@ abstract class Controller
     protected $code = 200;
 
     protected $data = [];
-    protected $message='';
+    protected $message = '';
 
     /**
      * Constructor.
@@ -47,8 +47,10 @@ abstract class Controller
      */
     public function __construct(ContainerInterface $container)
     {
+
+
         $this->container = $container;
-        $this->user = $this->auth->getUser();
+        $this->user = $container->get('auth')->getUser();
     }
 
     /**
@@ -127,36 +129,24 @@ abstract class Controller
      * @param Response $response
      * @return Response
      */
-    public function error(Response $response)
+    public function error($message)
     {
-        return $this->json($response, $this->validator->getErrors(), 400);
-    }
-    public function getErrorMessage(){
-        $errors=(array)$this->validator->getErrors();
-        $message = $this->getMessage(array_keys($errors)[0]);
-        return $message;
-    }
+        $this->validator->addError('error',$message);
+     }
 
-    public function getMessage($key){
-        $data=[
-            'username'=>'用户名错误',
-            'password'=>'密码格式'
-        ];
-        return $data[$key];
-    }
 
-    protected function fail(Response $response, $message=null, $status = 400)
+
+    protected function fail(Response $response, $message = null, $status = 400)
     {
 
-        if(!$message){
-            $message=$this->getErrorMessage();
+        if (!$message) {
+            $message = $this->validator->getFirstError('error');
 
         }
         $this->setCode($status);
         $this->setMessage($message);
         return $response->withJson($this->formatResponse(), $status);
     }
-
 
 
     /**
@@ -245,12 +235,10 @@ abstract class Controller
     }
 
 
-
-
     public function formatResponse()
     {
         return [
-            'code' => $this->code,
+            'status' => $this->code,
             'message' => $this->message,
             'data' => $this->data
         ];

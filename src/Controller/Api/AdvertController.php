@@ -26,9 +26,9 @@ class AdvertController extends Controller
 
 
 
-    public function show(Request $request,Response $response,$args)
+    public function show(Request $request,Response $response,$id)
     {
-        $advert = AdvertService::get($args['id']);
+        $advert = AdvertService::get($id);
 
         return $this->json($response,$advert);
     }

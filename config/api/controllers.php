@@ -1,18 +1,15 @@
 <?php
 
 return [
-    'app.controller'   => 'App\Controller\AppController',
-    'admin.controller' => 'App\Controller\AdminController',
-    'auth.controller'  => 'App\Controller\AuthController',
-    'api.user.controller'  => 'App\Controller\Api\UserController',
-    'api.advert.controller'  => 'App\Controller\Api\AdvertController',
-    'api.order.controller'  => 'App\Controller\Api\OrderController',
-    'api.chat.controller'  => 'App\Controller\Api\ChatController',
-    'api.common.controller'  => 'App\Controller\Api\CommonController',
-    'api.wallet.controller'  => 'App\Controller\Api\WalletController',
+//    'app'   => 'App\Controller\AppController',
+//    'admin' => 'App\Controller\AdminController',
+//    'auth'  => 'App\Controller\AuthController',
+    'api.user'  => 'App\Controller\Api\UserController',
+    'api.advert'  => 'App\Controller\Api\AdvertController',
+    'api.order'  => 'App\Controller\Api\OrderController',
+    'api.chat'  => 'App\Controller\Api\ChatController',
+    'api.common'  => 'App\Controller\Api\CommonController',
+    'api.wallet'  => 'App\Controller\Api\WalletController',
 
-
-
-
-    'api.test.controller'  => 'App\Controller\Api\TestController',
+    'api.test'  => 'App\Controller\Api\TestController',
 ];

@@ -17,6 +17,10 @@ use Slim\Views\TwigExtension;
 use Twig\Extension\DebugExtension;
 use Interop\Container\ContainerInterface;
 
+use Symfony\Component\Translation\Translator;
+use Symfony\Component\Translation\Loader\PhpFileLoader;
+use Symfony\Component\Translation\MessageSelector;
+
 $config = C();
 $capsule = new Manager();
 $capsule->addConnection($config['settings']['eloquent']);
@@ -51,6 +55,30 @@ $container['validator'] = function () {
     return new Validator();
 };
 
+$container[\Symfony\Component\Translation\Translator::class]= function (ContainerInterface $container) {
+//        $loader = new FileLoader(new Filesystem(), $container->get('settings')['translations_path']);
+//        // Register the Dutch translator (set to "en" for English)
+//        $translator = new Translator($loader, "nl");
+//        return $translator;
+
+//    $translator = new Translator('zh_CN');
+//    $translator->addLoader('array', new ArrayLoader());
+//    $translator->addResource('array', array(
+//        'Symfony is great!' => 'J\'aime Symfony!',
+//    ), 'zh_CN');
+
+    $translator = new Translator("zh_CN", new MessageSelector());
+// Set a fallback language incase you don't have a translation in the default language
+    $translator->setFallbackLocales(['zh_CN']);
+// Add a loader that will get the php files we are going to store our translations in
+    $translator->addLoader('php', new PhpFileLoader());
+// Add language files here
+    $translator->addResource('php', C('root').'/translations/zh_cn/message.php', 'zh_CN'); // Norwegian
+
+     //$translator->addResource('php', './translations/en_US.php', 'en_US'); // English
+    return $translator;
+
+};
 
 $container['monolog'] = function (ContainerInterface $c) {
     $config = $c->get('settings')['monolog'];

@@ -1,11 +1,13 @@
 <?php
-use App\Application;
-use Symfony\Component\Dotenv\Dotenv;
 
-session_start();
+use App\Kernel;
+use Symfony\Component\Debug\Debug;
+use Symfony\Component\Dotenv\Dotenv;
+use Symfony\Component\HttpFoundation\Request;
 
 require __DIR__.'/../vendor/autoload.php';
 
+// The check is to ensure we don't use .env in production
 if (!isset($_SERVER['APP_ENV'])) {
     if (!class_exists(Dotenv::class)) {
         throw new \RuntimeException('APP_ENV environment variable is not defined. You need to define environment variables for configuration or add "symfony/dotenv" as a Composer dependency to load variables from a .env file.');
@@ -13,26 +15,35 @@ if (!isset($_SERVER['APP_ENV'])) {
     (new Dotenv())->load(__DIR__.'/../.env');
 }
 
+if ($_SERVER['APP_DEBUG'] ?? ('prod' !== ($_SERVER['APP_ENV'] ?? 'dev'))) {
+    umask(0000);
 
-function C($key = NULL, $value = NULL)
+    Debug::enable();
+}
+
+if ($trustedProxies = $_SERVER['TRUSTED_PROXIES'] ?? false) {
+    Request::setTrustedProxies(explode(',', $trustedProxies), Request::HEADER_X_FORWARDED_ALL ^ Request::HEADER_X_FORWARDED_HOST);
+}
+
+if ($trustedHosts = $_SERVER['TRUSTED_HOSTS'] ?? false) {
+    Request::setTrustedHosts(explode(',', $trustedHosts));
+}
+
+function isOldApiCall()
 {
-    static $_config = array();
-
-    if (is_array($key)) {
-        return $_config = array_merge($_config,  ($key));
-    }
-    $key =  ($key);
-    if (!is_null($value)) {
-        return $_config[$key] = $value;
-    }
-    if (empty($key)) {
-        return $_config;
-    }
-    return isset($_config[$key]) ? $_config[$key] : NULL;
+    return (!(isset($_SERVER['HTTP_ACCEPT']) && $_SERVER['HTTP_ACCEPT'] == 'application/vnd.edusoho.v2+json'))
+        && ((strpos($_SERVER['REQUEST_URI'], '/api') === 0) || (strpos($_SERVER['REQUEST_URI'], '/app_dev.php/api') === 0));
 }
 
 
-$app = new Application($_SERVER['APP_ENV'] ?? 'dev');
+if (isOldApiCall()) {
+    define('API_ENV', 'prod');
+    include __DIR__.'/api.php';
+    exit();
+}
 
-
-$app->run();
+$kernel = new Kernel($_SERVER['APP_ENV'] ?? 'dev', $_SERVER['APP_DEBUG'] ?? ('prod' !== ($_SERVER['APP_ENV'] ?? 'dev')));
+$request = Request::createFromGlobals();
+$response = $kernel->handle($request);
+$response->send();
+$kernel->terminate($request, $response);

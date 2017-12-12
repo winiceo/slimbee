@@ -3,19 +3,21 @@
 use App\Middleware\AuthMiddleware;
 use App\Middleware\GuestMiddleware;
 use Slim\Middleware\JwtAuthentication;
-$container = [];
 
-$container['guest.middleware'] = function ($container) {
-    return new GuestMiddleware($container['router'], $container['auth']);
-};
+use Interop\Container\ContainerInterface;
 
-$container['auth.middleware'] = function ($container) {
+
+$container->set('guest.middleware',function (ContainerInterface $container) {
+    return new GuestMiddleware($container->get('router'), $container->get('auth'));
+});
+
+$container->set('auth.middleware',function ( ContainerInterface $container) {
     return function ($role = null) use ($container) {
-        return new AuthMiddleware($container['router'], $container['flash'], $container['auth'], $role);
+        return new AuthMiddleware($container->get('router'), $container->get('falsh'), $container->get('auth'), $role);
     };
-};
+});
 
-$container['jwt.middleware'] = function ($container) {
+$container->set('jwt.middleware',  function (ContainerInterface $container) {
 
     return new JwtAuthentication([
         "secret" => $container->get('secret-key'),
@@ -26,12 +28,12 @@ $container['jwt.middleware'] = function ($container) {
         "attribute" => "jwt",
         "callback" => function ($request, $response, $arguments)use($container)   {
 
-            $container["jwt"] = $arguments["decoded"];
+            $container->set('jwt',$arguments["decoded"]);
 
         }
     ]);
 
-};
+});
 //$app->add($container['csrf']);
 return $container;
 

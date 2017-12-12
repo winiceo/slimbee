@@ -6,18 +6,24 @@ use App\Model\User;
 use App\Service\UserWalletService;
 use Cartalyst\Sentinel\Checkpoints\ThrottlingException;
 use Firebase\JWT\JWT;
+use Interop\Container\ContainerInterface;
 use Respect\Validation\Validator as V;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
 class WalletController extends Controller
 {
+    public function __construct(ContainerInterface $container)
+    {
+
+       parent::__construct($container);
+    }
 
 
 
     public function address(Request $request, Response $response){
-        $user=$this->auth->getUser();
-        $address=UserWalletService::address($user);
+
+        $address=UserWalletService::address($this->auth->getUser());
         return $this->json($response,$address);
     }
 
@@ -60,7 +66,7 @@ class WalletController extends Controller
     }
 
 
-    public function withdraw(Request $request, Response $response,$args){
+    public function withdraw(Request $request, Response $response){
 
 
         if ($request->isPost()) {
@@ -89,10 +95,11 @@ class WalletController extends Controller
     }
 
 
-    public function history(Request $request, Response $response,$args){
+    public function history(Request $request, Response $response){
 
-        $withdraws=UserWalletService::getHistory($request,$this->auth->getUser());
-        return $this->json($response,$withdraws);
+
+     $withdraws=UserWalletService::getHistory($request,$this->auth->getUser());
+    return $this->json($response,$withdraws);
 
     }
 

@@ -4,6 +4,7 @@ namespace App\Controller\Api;
 
 use App\Model\User;
 use App\Service\UserWalletService;
+use App\Validator\UserRegister;
 use Cartalyst\Sentinel\Checkpoints\ThrottlingException;
 use Firebase\JWT\JWT;
 use Respect\Validation\Validator as V;
@@ -13,7 +14,7 @@ use Slim\Http\Response;
 class UserController extends Controller
 {
 
-
+    use UserRegister;
     public function jwtGenerator(User $user, $secretKey)
     {
         $token = [
@@ -35,43 +36,6 @@ class UserController extends Controller
     }
 
 
-    /**
-     * @api {post} /user/login 用户登录
-     * @apiName GetUser
-     * @apiGroup User
-     *
-     * @apiParam {String} username 用户登录名.
-     * @apiParam {String} password 用户密码.
-     *
-     * @apiSuccess {String} err_code  状态码0为成功.
-     * @apiSuccess {String} err_msg 信息提示.
-     * @apiSuccessExample Success-Response:
-     *     HTTP/1.1 200 OK
-     *    {
-     * "err_code": 0,
-     * "err_msg": "success",
-     * "data": {
-     * "token": {
-     * "jwt": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE0NDU5MTgyOTksImp0aSI6ImJFR2Z1ak5Bckp4QXl2UHdPSVFaekV2eEtYT2hrRlwvT1VcL1hzTUlsRXhUdz0iLCJpc3MiOiJwbWtvb19zZWxsZXIiLCJleHAiOjE0NDU5MjU0OTksImRhdGEiOnsiaWQiOiIxIiwibmFtZSI6ImFkbWluIn19.NtZxwC9WoDdnGVjboC1O3RJCcAMsj0D5G3A1vxL0RMMEiSwKC3jPLRMaByCXd9xm6IJw8BH0GLkVnWGvW5_aWA"
-     * },
-     * "user": {
-     * "id": "1",
-     * "username": "admin",
-     * "email": "admin@71an.com"
-     * }
-     * }
-     * }
-     *
-     * @apiError UserNotFound The id of the User was not found.
-     *
-     * @apiErrorExample Error-Response:
-     *     HTTP/1.1 404 Not Found
-     * {
-     * "err_code": 1,
-     * "err_msg": "登录失败"
-     * }
-     * @apiSampleRequest /v1/user/login
-     */
 
     public function login(Request $request, Response $response)
     {
@@ -88,7 +52,7 @@ class UserController extends Controller
                     $this->flash('success', 'You are now logged in.');
                     $data=[
                         "user"=>$this->auth->getUser(),
-                        "token"=>$this->jwtGenerator($this->auth->getUser(),$this->container['secret-key'])
+                        "token"=>$this->jwtGenerator($this->auth->getUser(),$this->container->get('secret-key'))
                     ];
 
                     return $this->json($response,$data);
@@ -114,23 +78,20 @@ class UserController extends Controller
             $email = $request->getParam('email');
             $password = $request->getParam('password');
 
-            $this->validator->request($request, [
-                'username' => V::length(3, 25)->alnum('_')->noWhitespace(),
-                'email' => V::noWhitespace()->email(),
-                'password' => [
-                    'rules' => V::noWhitespace()->length(6, 25),
-                    'messages' => [
-                        'length' => 'The password length must be between {{minValue}} and {{maxValue}} characters'
-                    ]
-                ]
-            ]);
+
+            $violations=$this->inputCheck($request);
+
+            if (0 !== count($violations)) {
+                $this->error($violations[0]->getMessage());
+            }
+
 
             if ($this->auth->findByCredentials(['login' => $username])) {
-                $this->validator->addError('username', 'This username is already used.');
+                $this->error('此用户名已存在');
             }
 
             if ($this->auth->findByCredentials(['login' => $email])) {
-                $this->validator->addError('email', 'This email is already used.');
+                $this->error('此邮箱已存在');
             }
 
             if ($this->validator->isValid()) {
@@ -151,7 +112,7 @@ class UserController extends Controller
 
                 $data=[
                     "user"=>$user,
-                    "token"=>$this->jwtGenerator($user,$this->container['secret-key'])
+                    "token"=>$this->jwtGenerator($user,$this->container->get('secret-key'))
                 ];
 
                 return $this->json($response,$data);
