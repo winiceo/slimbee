@@ -20,6 +20,7 @@ use Interop\Container\ContainerInterface;
 use Symfony\Component\Translation\Translator;
 use Symfony\Component\Translation\Loader\PhpFileLoader;
 use Symfony\Component\Translation\MessageSelector;
+use Monolog\Formatter\JsonFormatter;
 
 $config = C();
 $capsule = new Manager();
@@ -84,18 +85,47 @@ $container['monolog'] = function (ContainerInterface $c) {
     $config = $c->get('settings')['monolog'];
 
     $logger = new Logger($config['name']);
+    $file_stream = new  StreamHandler($config['path'] . date("Y-m-d-") . getenv('APP_ENV') .'.log',Logger::INFO);
+    $file_stream->setFormatter(new  JsonFormatter());
+
+    $logger->pushHandler($file_stream);
+
     $logger->pushProcessor(new UidProcessor());
-    $logger->pushHandler(new StreamHandler($config['path'], $config['level']));
 
     return $logger;
 };
-$container[\Slim\Views\Twig::class] = function (ContainerInterface $c) {
+$container['cache'] = function (ContainerInterface $c) {
+        $config = $c->get('settings')['redis'];
 
+        $redis = [
+            'schema' => $config['schema'],
+            'host' => $config['host'],
+            'port' => $config['port'],
+            // other options
+        ];
+        $connection = new Predis\Client($redis);
+        return new Symfony\Component\Cache\Adapter\RedisAdapter($connection);
+};
+
+$container['redis'] = function (ContainerInterface $c) {
+        $config = $c->get('settings')['redis'];
+
+        $redis = [
+            'schema' => $config['schema'],
+            'host' => $config['host'],
+            'port' => $config['port'],
+            // other options
+        ];
+
+        $client = new Predis\Client($redis);
+        return $client;
+};
+
+
+
+$container['twig'] = function (ContainerInterface $c) {
 
     $config = $c->get('settings')['twig'];
-
-
-
     $twig = new Twig($config['path'], $config['options']);
 
     $twig->addExtension(new TwigExtension($c->get('router'), $c->get('request')->getUri()));
@@ -109,5 +139,7 @@ $container[\Slim\Views\Twig::class] = function (ContainerInterface $c) {
 
     return $twig;
 };
+
+
 
 return $container;

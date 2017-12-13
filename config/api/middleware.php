@@ -25,11 +25,26 @@ $container->set('jwt.middleware',  function (ContainerInterface $container) {
         "path" => "/api/v2",
         "algorithm" => ["HS256"],
         "passthrough" => ["/api/v2/user/login"],
+        "rules" => [
+
+            new \Slim\Middleware\JwtAuthentication\RequestMethodRule([
+                "passthrough" => ["OPTIONS"]
+            ])
+        ],
         "attribute" => "jwt",
+        'message'=>'认证失败',
         "callback" => function ($request, $response, $arguments)use($container)   {
 
             $container->set('jwt',$arguments["decoded"]);
+            $container->get('auth')->authenticate((array)$arguments["decoded"]->data->credentials,true);
 
+        },
+        "error" => function ($request, $response,$arguments) {
+            $data["status"] = "401";
+            $data["message"] = $arguments["message"];
+            return $response
+                ->withHeader("Content-Type", "application/json")
+                ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         }
     ]);
 

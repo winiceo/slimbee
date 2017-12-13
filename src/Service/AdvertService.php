@@ -65,7 +65,10 @@ class AdvertService
 
     public static function get($id)
     {
-        return Advert::with('User')->findOrFail($id);
+        $advert=Advert::find($id);
+
+
+        return $advert;
     }
 
 

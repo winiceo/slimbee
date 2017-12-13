@@ -10,26 +10,39 @@ namespace App\Service;
 
 
 use App\Model\Order;
+use App\Model\User;
+use App\Model\UserBalance;
 use App\Repositories\OrderRepository;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Config;
+use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Redis;
+use Leven\Log;
+use Monolog\Logger;
+use Slim\Http\Request;
+
 
 class OrderService
 {
     protected $order;
 
-    public function __construct($order)
+     public function __construct(Order $order)
     {
+        $this->order=$order;
 
-        $this->order = $order;
 
     }
+    public static function get($id)
+    {
+        $advert=Order::find($id);
+        return $advert;
+    }
+
 
     public function store($data){
+
+
         $ret =  Order::create($data);
+        Log::info('订单创建 成功');
         return $ret;
     }
 
@@ -62,13 +75,12 @@ class OrderService
         $coin_type=$this->order->coin_type;
         $block_balance=$this->order->qty;
 
-        DB::table('user_balances')
-            ->where('user_id',$uid)
+        UserBalance::where('user_id',$uid)
             ->where('coin_type',$coin_type)
             ->increment('block_balance', $block_balance);
 
 
-        Log::info('increment_balance: '.$block_balance);
+        Log::info('balance',['message'=>'锁定卖家币 increment balance: '.$block_balance]);
 
     }
 
@@ -79,12 +91,11 @@ class OrderService
         $block_balance=$this->order->block_balance;
 
 
-        DB::table('user_balances')
-            ->where('user_id',$uid)
+        UserBalance::where('user_id',$uid)
             ->where('coin_type',$coin_type)
             ->decrement('block_balance', $block_balance);
 
-        Log::info('unlock_balance: '.$block_balance);
+        $this->logger->info('unlock_balance: '.$block_balance);
 
 
     }
@@ -153,6 +164,27 @@ class OrderService
             }
 
         }
+    }
+
+    public static function getByUser(Request $request,User $user, int $perPage = 20): Paginator
+    {
+
+        $order_by = $request->getParam('order_by', "id");
+        $desc = $request->getParam('desc', 1);
+
+        return Order::where(function ($query) use ($request,$user) {
+
+            $query->where('user_id', $user->id);
+            $trade_type = $request->getParam('trade_type', -1);
+            if($trade_type!==-1) {
+                $query->where('trade_type', $trade_type);
+            }
+            $coin_type = $request->getParam('coin_type', -1);
+            if($coin_type!==-1){
+                $query->where('coin_type', $coin_type);
+            }
+        })->orderBy($order_by, $desc==1?"desc":"asc")
+        ->paginate($perPage);
     }
 
 }

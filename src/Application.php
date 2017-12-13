@@ -29,6 +29,8 @@ class Application extends App
     {
         $this->environment = $environment;
         $this->rootDir = $this->getRootDir();
+        C('environment',$environment);
+
 
         $containerBuilder = new ContainerBuilder;
         C('root',$this->rootDir);

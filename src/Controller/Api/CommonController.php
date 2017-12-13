@@ -9,6 +9,7 @@ use Respect\Validation\Validator as V;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use \Yunpian\Sdk\YunpianClient;
+use App\Leven;
 class CommonController extends Controller
 {
 
@@ -21,7 +22,7 @@ class CommonController extends Controller
 
 
 
-        $code=generate_code(4);
+        $code=Leven::generate_code(4);
        // Redis::command('hset', ['safe_check', $mobile,$code]);
 
 
@@ -30,9 +31,9 @@ class CommonController extends Controller
             $clnt = YunpianClient::create(env("YUNPIAN_API"));
             $param = [YunpianClient::MOBILE => $mobile,YunpianClient::TEXT => '【币赢科技】 您的验证码是 '.$code];
             $r = $clnt->sms()->single_send($param);
-            return $this->json($response,["message"=>"发送成功"]);
+            return $this->setMessage('发送成功')->json($response,[]);
         }
-        return $this->json($response,["message"=>"发送成功"]);
+        return $this->setMessage('发送成功')->json($response,[]);
     }
 
 
@@ -40,7 +41,7 @@ class CommonController extends Controller
 
         $mobile = $request->getParam('mobile');
 
-        $code=generate_code(4);
+        $code=Leven::generate_code(4);
         // Redis::command('hset', ['safe_check', $mobile,$code]);
 
 
@@ -49,8 +50,8 @@ class CommonController extends Controller
             $clnt = YunpianClient::create(env("YUNPIAN_API"));
             $param = [YunpianClient::MOBILE => $mobile,YunpianClient::TEXT => '【币赢科技】 您的验证码是 '.$code];
             $r = $clnt->sms()->single_send($param);
-            return $this->json($response,["message"=>"发送成功"]);
+            return $this->setMessage('发送成功')->json($response,[]);
         }
-        return $this->json($response,["message"=>"发送成功"]);
+        return $this->setMessage('发送成功')->json($response,[]);
     }
 }

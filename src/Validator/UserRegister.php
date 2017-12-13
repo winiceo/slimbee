@@ -32,13 +32,14 @@ trait UserRegister
         $username = $request->getParam('username');
         $email = $request->getParam('email');
         $password = $request->getParam('password');
+
         $violations = [];
         $violations[] = $validator->validate($username, array(
 
             new Assert\Length(array(
                 'max' => 25,
                 'maxMessage' => $this->translator->trans('max %name%', array('%name%' => 25)))),
-            new Assert\NotBlank(array('message' => $this->translator->trans('%name% not blank', array('%name%' => '名称')))),
+            new Assert\NotBlank(array('message' => $this->translator->trans('%name% not blank', array('%name%' => '用户名')))),
 
         ));
 
@@ -46,8 +47,8 @@ trait UserRegister
         $violations[] = $validator->validate($password, array(
                 new Assert\Length(array('min' => 6, 'max' => 25,
                     'exactMessage' => '密码长度为6-25',
-                    'minMessage' => '最小长度为6',
-                    'maxMessage' => '最大长度为25'
+                    'minMessage' => '密码最小长度为6',
+                    'maxMessage' => '密码最大长度为25'
                 )),
                 new Assert\NotBlank(array('message' => $this->translator->trans('%name% not blank', array('%name%' => '密码')))),
             )

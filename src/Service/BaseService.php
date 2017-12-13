@@ -9,58 +9,21 @@
 namespace App\Service;
 
 
-use App\Helpers\CoinHelpers;
-use App\Model\CoinType;
-use App\Model\User;
-use App\Model\UserWallet;
-use App\Model\WalletAddress;
-
-
 class BaseService
 {
-    use CoinHelpers;
-
-    protected $container;
 
     /**
      * Constructor.
      *
      * @param ContainerInterface $container
      */
-    public function __construct(ContainerInterface $container)
+    public function __construct(ContainerInterface $container,Logger $logger)
     {
         $this->container = $container;
+        $this->logger=$logger;
+
+        $logger->info("dfasdfasdf");
 
 
     }
-
-    /**
-     * Gets a service from the container.
-     *
-     * @param string $property
-     *
-     * @return mixed
-     */
-    public function __get($property)
-    {
-        return $this->container->get($property);
-    }
-
-    public function getCurrentUser(){
-       return $this->auth->getUser();
-    }
-
-    public function getCoinType(){
-        return CoinType::get();
-    }
-
-    public function getTradeType(){
-
-      return  [
-            ["id"=>0,"label"=>'出售'],
-            ["id"=>1,"label"=>'购买'],
-        ];
-    }
-
-
 }

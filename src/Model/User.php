@@ -28,5 +28,15 @@ class User extends EloquentUser
 
     protected $loginNames = ['username', 'email'];
 
+    public function addresss()
+    {
+        return $this->hasMany(Address::class)->orderBy('created_at', 'desc');
+    }
+
+    public function balances()
+    {
+        return $this->hasMany(UserBalance::class)->orderBy('created_at', 'asc');
+    }
+
 
 }

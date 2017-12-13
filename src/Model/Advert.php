@@ -75,25 +75,19 @@ class Advert extends Model
     }
 
 
-    /**
-     * @return \App\Models\Thread[]
-     */
     public static function feed(int $limit = 20): Collection
     {
         return static::feedQuery()->limit($limit)->get();
     }
 
     /**
-     * @return \App\Models\Thread[]
-     */
+      */
     public static function feedPaginated(int $perPage = 20): Paginator
     {
         return static::feedQuery()->paginate($perPage);
     }
 
-    /**
-     * @return \App\Models\Thread[]
-     */
+
     public static function feedByTagPaginated(Tag $tag, int $perPage = 20): Paginator
     {
         return static::feedQuery()

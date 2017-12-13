@@ -3,6 +3,7 @@
 namespace App\Controller\Api;
 
 use App\Model\User;
+use App\Service\UserService;
 use App\Service\UserWalletService;
 use App\Validator\UserRegister;
 use Cartalyst\Sentinel\Checkpoints\ThrottlingException;
@@ -15,7 +16,7 @@ class UserController extends Controller
 {
 
     use UserRegister;
-    public function jwtGenerator(User $user, $secretKey)
+    public function jwtGenerator(User $user, $credentials)
     {
         $token = [
             "iss" => "http://pf.local",
@@ -24,13 +25,11 @@ class UserController extends Controller
             'exp' => strtotime("+12 month"),
             "data" => [
                 'id' => $user->id,
-                'username' => $user->username,
-                'password' => $user->password,
-                'roles' => $user->permissons,
+                'credentials'=>$credentials
             ],
         ];
 
-        $jwt = JWT::encode($token, $secretKey);
+        $jwt = JWT::encode($token, $this->container->get('secret-key'));
 
         return $jwt;
     }
@@ -52,7 +51,7 @@ class UserController extends Controller
                     $this->flash('success', 'You are now logged in.');
                     $data=[
                         "user"=>$this->auth->getUser(),
-                        "token"=>$this->jwtGenerator($this->auth->getUser(),$this->container->get('secret-key'))
+                        "token"=>$this->jwtGenerator($this->auth->getUser(),$credentials)
                     ];
 
                     return $this->json($response,$data);
@@ -105,6 +104,9 @@ class UserController extends Controller
                         'user.delete' => 0
                     ]
                 ]);
+                UserService::checkWallet($user);
+
+
 
                 $role->users()->attach($user);
 

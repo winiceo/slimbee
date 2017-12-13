@@ -35,6 +35,6 @@ function C($key = NULL, $value = NULL)
 
 
 $app = new Application($_SERVER['APP_ENV'] ?? 'dev');
-
+\Leven\Facade::setFacadeApplication($app);
 
 $app->run();

@@ -1,5 +1,11 @@
 # api使用说明
 
+测试环境 域名 http://cms.71an.com/api/v2(apiurl)
+
+>api请求路径 如：Post {{apiurl}}/order/detail/{id}
+替换路径中的变量:id为请求参数
+
+
 > api返回类型
 
 ```json5
@@ -45,4 +51,6 @@ Authorization:
 |current_page|当前页|
 |total|总数据量|
 |per_page|每页数据|
+
+>其它字段为网页版用，客户端不用处理
 

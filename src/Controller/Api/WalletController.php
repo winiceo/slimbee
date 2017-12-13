@@ -15,13 +15,18 @@ class WalletController extends Controller
 {
     public function __construct(ContainerInterface $container)
     {
-
        parent::__construct($container);
     }
 
 
 
     public function address(Request $request, Response $response){
+//        $user=$this->auth->getUser();
+//        if(!$user){
+//            $this->error('获取用户失败');
+//            return $this->fail($response,[]);
+//        }
+
 
         $address=UserWalletService::address($this->auth->getUser());
         return $this->json($response,$address);

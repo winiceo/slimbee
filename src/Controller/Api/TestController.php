@@ -7,14 +7,27 @@ use App\Model\User;
 use App\Model\WalletAddress;
 use App\Repositories\AdvertRepository;
 use App\Service\AdvertService;
+use App\Service\BaseService;
+use App\Service\OrderService;
+use App\Service\TestService;
 use App\Validator\UserRegister;
 
+use Carbon\Carbon;
 use Cartalyst\Sentinel\Checkpoints\ThrottlingException;
+use Cartalyst\Sentinel\Native\SentinelBootstrapper;
+use Cartalyst\Sentinel\Sentinel;
 use Firebase\JWT\JWT;
+use Leven\Container;
+use Leven\Log;
+use Leven\View;
+use Monolog\Formatter\JsonFormatter;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use Respect\Validation\Validator as V;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
+use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Symfony\Component\Translation\Loader\ArrayLoader;
 use Symfony\Component\Translation\Loader\PhpFileLoader;
 use Symfony\Component\Translation\Translator;
@@ -42,6 +55,7 @@ class TestController extends Controller
 
 
 
+
     public function delete($request, $response)
     {
 
@@ -62,7 +76,38 @@ class TestController extends Controller
          }
     }
 
-    public function ok($id,Request $request){
+
+    public function ok( ){
+
+
+        Container::get('redis')->hset('hset', "aa",\GuzzleHttp\json_encode(['a'=>3333]));
+        Log::info('aafasdfsdf');
+        $item = $this->redis->hget('hset' ,"aa");
+
+       return View::fetch('home.twig',["item"=>$item]);
+        dump($item);
+        exit;
+
+         //dump($this->cache);
+         //$item = $this->redis->command('hset', ['monitoring_order', 333,Carbon::now()]);
+         $item = $this->redis->hset('hset', "aa",\GuzzleHttp\json_encode(['a'=>3]));
+         $item = $this->redis->hget('hset' ,"aa");
+
+
+         dump($item);
+         exit;
+        if ($item->isHit()) {
+            return 'I was previously called at ' . $item->get();
+        }
+        else {
+            $item->set(time());
+            $item->expiresAfter(3600);
+            $this->cache->save($item);
+
+            return 'I am being called for the first time, I will return results from cache for the next 3600 seconds.';
+        }
+
+
 
         $data=[
             "username"=>''

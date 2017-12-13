@@ -26,9 +26,14 @@ return [
 
     'monolog' => [
         'name'  => 'app',
-        'path'  => $app->getLogDir().'/'.$app->getEnvironment().'.log',
+        'path'  => $app->getLogDir().'/',
         'level' => Monolog\Logger::ERROR
     ],
+    'redis' => [
+            'schema' => 'tcp',
+            'host' => 'localhost',
+            'port' => 6379,
+      ],
 
     'secret-key' => 'sa9328343nd774788dhdhd-884747jjj99387jjhd-09'
 

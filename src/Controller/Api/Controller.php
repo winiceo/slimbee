@@ -3,9 +3,12 @@
 namespace App\Controller\Api;
 
 use App\Exception\AccessDeniedException;
+use App\Exception\ServerError;
 use Awurth\SlimValidation\Validator;
 use Cartalyst\Sentinel\Sentinel;
 use Interop\Container\ContainerInterface;
+use Leven\Log;
+use Leven\Redis;
 use Monolog\Logger;
 use Slim\Csrf\Guard;
 use Slim\Exception\NotFoundException;
@@ -14,6 +17,7 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Router;
 use Slim\Views\Twig;
+use Psr\Log\LoggerInterface;
 
 /**
  * @property Guard csrf
@@ -40,6 +44,8 @@ abstract class Controller
     protected $data = [];
     protected $message = '';
 
+    protected $logger;
+
     /**
      * Constructor.
      *
@@ -51,6 +57,8 @@ abstract class Controller
 
         $this->container = $container;
         $this->user = $container->get('auth')->getUser();
+        $this->logger=$container->get('monolog');
+
     }
 
     /**
@@ -111,14 +119,14 @@ abstract class Controller
     protected function json(Response $response, $data, $status = 200)
     {
         $this->setCode($status);
-        $this->setMessage("");
+
         $this->setData($data);
         return $response->withJson($this->formatResponse(), $status);
     }
 
     protected function success(Response $response, $data, $status = 200)
     {
-
+        $this->setData($data);
         return $response->withJson($this->formatResponse(), $status);
     }
 
@@ -132,6 +140,8 @@ abstract class Controller
     public function error($message)
     {
         $this->validator->addError('error',$message);
+        Log::error($message);
+        throw new ServerError($message,400);
      }
 
 
