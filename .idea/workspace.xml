@@ -2,55 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="11b2e701-4053-4533-b9d8-f2e7b912ae32" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/leven/App.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/leven/Auth.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/leven/Cache.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/leven/Container.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/leven/Facade.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/leven/Log.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/leven/Redis.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/leven/Request.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/leven/Response.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/leven/Route.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/leven/Settings.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/leven/View.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Exception/ServerError.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Leven.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Service/TestService.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Service/UserService.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/templates/error/404.twig" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/templates/error/500.twig" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/config/api/setting.php" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/config/api/slim.php" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/public/apidoc/core/locations.md" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/composer.lock" afterPath="$PROJECT_DIR$/composer.lock" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/symfony.lock" afterPath="$PROJECT_DIR$/symfony.lock" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/encodings.xml" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/composer.json" afterPath="$PROJECT_DIR$/composer.json" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/config/api/apiRoute.php" afterPath="$PROJECT_DIR$/config/api/apiRoute.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/config/api/container.php" afterPath="$PROJECT_DIR$/config/api/container.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/config/api/handlers.php" afterPath="$PROJECT_DIR$/config/api/handlers.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/config/api/middleware.php" afterPath="$PROJECT_DIR$/config/api/middleware.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/config/api/services.php" afterPath="$PROJECT_DIR$/config/api/services.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/api.php" afterPath="$PROJECT_DIR$/public/api.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/apidoc/README.md" afterPath="$PROJECT_DIR$/public/apidoc/README.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Application.php" afterPath="$PROJECT_DIR$/src/Application.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Controller/Api/AdvertController.php" afterPath="$PROJECT_DIR$/src/Controller/Api/AdvertController.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Controller/Api/CommonController.php" afterPath="$PROJECT_DIR$/src/Controller/Api/CommonController.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Controller/Api/Controller.php" afterPath="$PROJECT_DIR$/src/Controller/Api/Controller.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Controller/Api/OrderController.php" afterPath="$PROJECT_DIR$/src/Controller/Api/OrderController.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Controller/Api/TestController.php" afterPath="$PROJECT_DIR$/src/Controller/Api/TestController.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Controller/Api/UserController.php" afterPath="$PROJECT_DIR$/src/Controller/Api/UserController.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Controller/Api/WalletController.php" afterPath="$PROJECT_DIR$/src/Controller/Api/WalletController.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Helpers/CoinHelpers.php" afterPath="$PROJECT_DIR$/src/Helpers/CoinHelpers.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Model/Advert.php" afterPath="$PROJECT_DIR$/src/Model/Advert.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Model/User.php" afterPath="$PROJECT_DIR$/src/Model/User.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Service/AdvertService.php" afterPath="$PROJECT_DIR$/src/Service/AdvertService.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Service/BaseService.php" afterPath="$PROJECT_DIR$/src/Service/BaseService.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Service/OrderService.php" afterPath="$PROJECT_DIR$/src/Service/OrderService.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Validator/UserRegister.php" afterPath="$PROJECT_DIR$/src/Validator/UserRegister.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/home.twig" afterPath="$PROJECT_DIR$/templates/home.twig" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -191,8 +144,8 @@
       <file leaf-file-name=".gitignore" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/.gitignore">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="170">
-              <caret line="10" column="0" lean-forward="true" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
+            <state relative-caret-position="51">
+              <caret line="3" column="9" lean-forward="false" selection-start-line="3" selection-start-column="9" selection-end-line="3" selection-end-column="9" />
               <folding />
             </state>
           </provider>
@@ -375,7 +328,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/vendor/php-di/slim-bridge/src/ControllerInvoker.php" />
         <option value="$PROJECT_DIR$/public/index.php" />
         <option value="$PROJECT_DIR$/translations/zh_cn/auth.php" />
         <option value="$PROJECT_DIR$/config/api/controllers.php" />
@@ -426,6 +378,7 @@
         <option value="$PROJECT_DIR$/public/apidoc/core/order.md" />
         <option value="$PROJECT_DIR$/public/apidoc/README.md" />
         <option value="$PROJECT_DIR$/config/api/apiRoute.php" />
+        <option value="$PROJECT_DIR$/.gitignore" />
       </list>
     </option>
   </component>
@@ -576,7 +529,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="58709000" />
+    <option name="totallyTimeSpent" value="58776000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1" y="23" width="1267" height="729" extended-state="0" />
@@ -1083,8 +1036,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="10" column="0" lean-forward="true" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
+        <state relative-caret-position="51">
+          <caret line="3" column="9" lean-forward="false" selection-start-line="3" selection-start-column="9" selection-end-line="3" selection-end-column="9" />
           <folding />
         </state>
       </provider>
