@@ -6,6 +6,7 @@ use App\Helpers\CoinHelpers;
 use App\Model\User;
 use App\Repositories\AdvertRepository;
 use App\Service\AdvertService;
+use App\Validator\Advert;
 use Cartalyst\Sentinel\Checkpoints\ThrottlingException;
 use Firebase\JWT\JWT;
 use Respect\Validation\Validator as V;
@@ -15,7 +16,7 @@ use Slim\Http\Response;
 class AdvertController extends Controller
 {
 
-
+    use Advert;
 
 
     public function overview(Request $request,Response $response)
@@ -23,8 +24,6 @@ class AdvertController extends Controller
         $adverts = AdvertService::search($request,20);
         return $this->json($response,$adverts);
     }
-
-
 
     public function show(Request $request,Response $response,$id)
     {
@@ -45,6 +44,45 @@ class AdvertController extends Controller
         return  $this->json($response,$adverts);
 
     }
+
+
+    public function store(Request $request,Response $response){
+
+
+        if ($request->isPost()) {
+
+
+            $violations=$this->inputCheck($request);
+
+            if (0 !== count($violations)) {
+                $this->error($violations[0]->getMessage());
+            }
+            $data = $request->getParams();
+
+            $data["user_id"] = $this->auth->getUser()->getUserId();
+
+
+//            if ($this->auth->findByCredentials(['login' => $username])) {
+//                $this->error('此用户名已存在');
+//            }
+//
+//            if ($this->auth->findByCredentials(['login' => $email])) {
+//                $this->error('此邮箱已存在');
+//            }
+
+            if ($this->validator->isValid()) {
+                $advert=  AdvertService::store($data);
+                return $this->json($response, $advert);
+
+            }
+        }
+
+        return $this->fail($response);
+
+    }
+
+
+
 
 
 

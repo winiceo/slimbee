@@ -131,7 +131,7 @@ class Application extends App
     {
         $app = $this;
         $container = $this->getContainer();
-        require $this->getConfigurationDir() . '/api.php';
+        require $this->getConfigurationDir() . '/apiRoute.php';
     }
 
     protected function registerControllers($container)

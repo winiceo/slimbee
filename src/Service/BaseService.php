@@ -10,6 +10,7 @@ namespace App\Service;
 
 
 use App\Helpers\CoinHelpers;
+use App\Model\CoinType;
 use App\Model\User;
 use App\Model\UserWallet;
 use App\Model\WalletAddress;
@@ -47,6 +48,18 @@ class BaseService
 
     public function getCurrentUser(){
        return $this->auth->getUser();
+    }
+
+    public function getCoinType(){
+        return CoinType::get();
+    }
+
+    public function getTradeType(){
+
+      return  [
+            ["id"=>0,"label"=>'出售'],
+            ["id"=>1,"label"=>'购买'],
+        ];
     }
 
 

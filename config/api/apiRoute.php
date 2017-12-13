@@ -2,30 +2,6 @@
 
 use DI\Annotation\Inject;
 use Slim\Views\Twig;
-class UserController
-{
-    /**
-     * Annotation combined with phpdoc:
-     *
-     * @Inject
-     * @var Twig
-     */
-    protected $twig;
-    /**
-     * @Inject
-     * @var \App\Model\User
-     */
-    protected $user;
-    public function delete($request, $response)
-    {
-
-
-        $user=$this->user->findOrfail(3);
-        dump($user);
-
-         return $this->twig->render($response, 'home.twig');
-    }
-}
 
 
 $app->get('/', function($request, $response){
@@ -54,19 +30,23 @@ $app->group('/api/v2', function () use($container) {
     $this->get('/bootstrappers', function($request, $response){
         $data=[
             'app_name'=>'beeotc',
+            'coin_type'=>\App\Service\BaseService::getCoinType(),
+            'trade_type'=>\App\Service\BaseService::getTradeType()
         ];
-        return $response->withJson($data);
-
+        return $response->withJson(['status'=>200,'data'=>$data]);
     });
+
+
 
     $this->post('/user/login', ['api.user','login']) ;
     $this->post('/user/register', ['api.user','register']) ;
     $this->group('/user', function () {
         $this->post('/profile', ['api.user','profile']) ;
         $this->post('/logout', ['api.user','logout']) ;
-        $this->post('/safe/check', ['api.user','check']) ;
-
+        $this->post('/safe/check', ['api.user','check']);
         $this->post('/advert', ['api.advert','getByUser']) ;
+        $this->post('/order', ['api.order','getByUser']) ;
+        
     })->add($container->get('jwt.middleware')) ;
 
     $this->group('/finance', function () {
@@ -79,11 +59,8 @@ $app->group('/api/v2', function () use($container) {
         $this->post('/address', ['api.wallet','address']) ;
         $this->post('/address/store', ['api.wallet','storeAddress']) ;
         $this->post('/deposit/{id}', ['api.wallet','deposit']) ;
-
-
         $this->post('/withdraw', ['api.wallet','withdraw']) ;
         $this->post('/withdraw/history', ['api.wallet','history']) ;
-
 
     })->add($container->get('jwt.middleware')) ;
 
@@ -92,7 +69,9 @@ $app->group('/api/v2', function () use($container) {
 
     $this->group('/advert', function () {
         $this->post('', ['api.advert','overview']) ;
-        $this->post('/{id}', ['api.advert','show']) ;
+        $this->post('/store',['api.advert','store']);
+
+        $this->post('/get/{id}', ['api.advert','show']) ;
     });
 
 
@@ -103,7 +82,7 @@ $app->group('/api/v2', function () use($container) {
 
     $this->group('/order', function () {
 
-        $this->post('/order/create', ['api.order','store']) ;
+        $this->post('/order/store', ['api.order','store']) ;
         $this->post('/order/pay', ['api.order','pay']) ;
         $this->post('/order/cancel', ['api.order','cancel']) ;
         $this->post('/order/release', ['api.order','release']) ;

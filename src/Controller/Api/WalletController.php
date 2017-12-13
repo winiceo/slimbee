@@ -40,7 +40,7 @@ class WalletController extends Controller
             $data["user_id"] = $this->auth->getUser()->getUserId();
 
             if (UserWalletService::isExistAddress($data)!=null) {
-                $this->validator->addError('address', '已存在此地址');
+                $this->error('已存在此地址');
             }
             if ($this->validator->isValid()) {
 
@@ -48,9 +48,9 @@ class WalletController extends Controller
                 $address = UserWalletService::storeAddress($data);
                 return $this->json($response, $address);
             }
-            return $this->error($response);
+            return $this->fail($response);
         }
-        return $this->error($response);
+        return $this->fail($response);
 
     }
 

@@ -60,13 +60,13 @@ class UserController extends Controller
 
                     //return $this->redirect($response, 'home');
                 } else {
-                    $this->validator->addError('auth', 'Bad username or password');
+                    $this->error( '用户名或密码错误');
                 }
             } catch (ThrottlingException $e) {
-                $this->validator->addError('auth', 'Too many attempts!');
+                $this->error('频率受限');
             }
         }
-        return $this->error($response);
+        return $this->fail($response);
 
 
     }
@@ -134,7 +134,7 @@ class UserController extends Controller
 
     public function profile(Request $request, Response $response){
         $user=$this->auth->getUser();
-        return $this->json($user);
+        return $this->json($response,$user);
     }
 
 

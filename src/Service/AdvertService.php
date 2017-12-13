@@ -67,4 +67,13 @@ class AdvertService
     {
         return Advert::with('User')->findOrFail($id);
     }
+
+
+    public static function store($data){
+
+        $ret = Advert::create($data);
+
+
+        return $ret;
+    }
 }
