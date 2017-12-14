@@ -104,6 +104,9 @@
     "guzzlehttp/psr7": {
         "version": "1.4.2"
     },
+    "illuminate/config": {
+        "version": "v5.5.17"
+    },
     "illuminate/container": {
         "version": "v5.5.17"
     },
@@ -124,6 +127,9 @@
     },
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
+    },
+    "justinrainbow/json-schema": {
+        "version": "5.2.6"
     },
     "monolog/monolog": {
         "version": "1.23.0"

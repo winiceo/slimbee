@@ -1,6 +1,6 @@
-# api使用说明
+# Beeotc api使用说明
 
-测试环境 域名 http://cms.71an.com/api/v2(apiurl)
+测试环境域名(apiurl): http://cms.71an.com/api/v2
 
 >api请求路径 如：Post {{apiurl}}/order/detail/{id}
 替换路径中的变量:id为请求参数

@@ -29,10 +29,23 @@ $capsule->setAsGlobal();
 $capsule->bootEloquent();
 
 
-
 $container['secret-key'] = 'sa9328343nd774788dhdhd-884747jjj99387jjhd-09';
 $container["jwt"] = function ($container) {
     return new StdClass;
+};
+$container["config"] = function () {
+    $config = [];
+    $config['constants'] = ['ORDER_STATUS' => [
+        "CREATED" => 0,
+        "PAY" => 1,
+        "RELEASE" => 2,
+        "COMMENT" => 3,
+        "COMPLAINT" => 4,
+        "CANCEL" => 8,
+        "FINISH" => 9,
+
+    ]];
+    return new Illuminate\Config\Repository($config);
 };
 
 $container['auth'] = function (ContainerInterface $c) {
@@ -56,7 +69,7 @@ $container['validator'] = function () {
     return new Validator();
 };
 
-$container[\Symfony\Component\Translation\Translator::class]= function (ContainerInterface $container) {
+$container['translator'] = function (ContainerInterface $container) {
 //        $loader = new FileLoader(new Filesystem(), $container->get('settings')['translations_path']);
 //        // Register the Dutch translator (set to "en" for English)
 //        $translator = new Translator($loader, "nl");
@@ -74,9 +87,9 @@ $container[\Symfony\Component\Translation\Translator::class]= function (Containe
 // Add a loader that will get the php files we are going to store our translations in
     $translator->addLoader('php', new PhpFileLoader());
 // Add language files here
-    $translator->addResource('php', C('root').'/translations/zh_cn/message.php', 'zh_CN'); // Norwegian
+    $translator->addResource('php', C('root') . '/translations/zh_cn/message.php', 'zh_CN'); // Norwegian
 
-     //$translator->addResource('php', './translations/en_US.php', 'en_US'); // English
+    //$translator->addResource('php', './translations/en_US.php', 'en_US'); // English
     return $translator;
 
 };
@@ -85,7 +98,7 @@ $container['monolog'] = function (ContainerInterface $c) {
     $config = $c->get('settings')['monolog'];
 
     $logger = new Logger($config['name']);
-    $file_stream = new  StreamHandler($config['path'] . date("Y-m-d-") . getenv('APP_ENV') .'.log',Logger::INFO);
+    $file_stream = new  StreamHandler($config['path'] . date("Y-m-d-") . getenv('APP_ENV') . '.log', Logger::INFO);
     $file_stream->setFormatter(new  JsonFormatter());
 
     $logger->pushHandler($file_stream);
@@ -95,32 +108,31 @@ $container['monolog'] = function (ContainerInterface $c) {
     return $logger;
 };
 $container['cache'] = function (ContainerInterface $c) {
-        $config = $c->get('settings')['redis'];
+    $config = $c->get('settings')['redis'];
 
-        $redis = [
-            'schema' => $config['schema'],
-            'host' => $config['host'],
-            'port' => $config['port'],
-            // other options
-        ];
-        $connection = new Predis\Client($redis);
-        return new Symfony\Component\Cache\Adapter\RedisAdapter($connection);
+    $redis = [
+        'schema' => $config['schema'],
+        'host' => $config['host'],
+        'port' => $config['port'],
+        // other options
+    ];
+    $connection = new Predis\Client($redis);
+    return new Symfony\Component\Cache\Adapter\RedisAdapter($connection);
 };
 
 $container['redis'] = function (ContainerInterface $c) {
-        $config = $c->get('settings')['redis'];
+    $config = $c->get('settings')['redis'];
 
-        $redis = [
-            'schema' => $config['schema'],
-            'host' => $config['host'],
-            'port' => $config['port'],
-            // other options
-        ];
+    $redis = [
+        'schema' => $config['schema'],
+        'host' => $config['host'],
+        'port' => $config['port'],
+        // other options
+    ];
 
-        $client = new Predis\Client($redis);
-        return $client;
+    $client = new Predis\Client($redis);
+    return $client;
 };
-
 
 
 $container['twig'] = function (ContainerInterface $c) {
@@ -139,7 +151,6 @@ $container['twig'] = function (ContainerInterface $c) {
 
     return $twig;
 };
-
 
 
 return $container;

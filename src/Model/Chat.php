@@ -3,7 +3,6 @@
 namespace App\Model;
 
 
-
 /**
  * @property integer $id [TYPE=INTEGER, NULLABLE=0, DEFAULT=""]
  * @property string $coin_type [TYPE=STRING, NULLABLE=0, DEFAULT=""]
@@ -18,10 +17,9 @@ namespace App\Model;
 class Chat extends Model
 {
     // Attributes.
-    public $timestamps = false;
-     protected $table = 'chat';
+    protected $table = 'chat';
     protected $fillable = [
-        'order_id', 'message'
+        'order_id', 'message', 'from', 'to'
     ];
     protected $guarded = [];
 

@@ -10,6 +10,7 @@ namespace App\Service;
 
 
 use App\Model\Order;
+use App\Model\OrderLog;
 use App\Model\User;
 use App\Model\UserBalance;
 use App\Repositories\OrderRepository;
@@ -37,12 +38,19 @@ class OrderService
         return $advert;
     }
 
+    public static function log($data){
+
+         OrderLog::create($data);
+
+         Log::info('order_status: ' , $data);
+
+    }
+
 
     public function store($data){
-
-
         $ret =  Order::create($data);
-        Log::info('订单创建 成功');
+
+
         return $ret;
     }
 
@@ -88,15 +96,18 @@ class OrderService
     public   function sellerUnlockOrder( ){
         $uid=$this->order->ad_user_id;
         $coin_type=$this->order->coin_type;
-        $block_balance=$this->order->block_balance;
+        $block_balance=$this->order->qty;
 
 
         UserBalance::where('user_id',$uid)
             ->where('coin_type',$coin_type)
             ->decrement('block_balance', $block_balance);
 
-        $this->logger->info('unlock_balance: '.$block_balance);
-
+        OrderService::log([
+            "order_id"=>$this->order->id,
+            "message"=>\GuzzleHttp\json_encode(["message"=>'seller unlock']),
+            "status"=>0
+        ]);
 
     }
 
@@ -110,26 +121,38 @@ class OrderService
             $coin_type=$this->order->coin_type;
             $block_balance=$this->order->qty;
 
-
-
             //解锁
-            DB::table('user_balances')
-                ->where('user_id',$uid)
+            UserBalance::where('user_id',$uid)
                 ->where('coin_type',$coin_type)
                 ->decrement('block_balance', $block_balance);
+                //->decrement('total_balance', $block_balance);
+
+            OrderService::log([
+                "order_id"=>$this->order->id,
+                "message"=>\GuzzleHttp\json_encode(["message"=>'seller unblock','block_balance'=>$block_balance]),
+                "status"=>0
+            ]);
 
             //减少总资产
-            DB::table('user_balances')
-                ->where('user_id',$uid)
+            UserBalance::where('user_id',$uid)
                 ->where('coin_type',$coin_type)
                 ->decrement('total_balance', $block_balance);
 
+            OrderService::log([
+                "order_id"=>$this->order->id,
+                "message"=>\GuzzleHttp\json_encode(["message"=>'seller decrement','block_balance'=>$block_balance]),
+                "status"=>0
+            ]);
 
-            DB::table('user_balances')
-                ->where('user_id',$this->order->user_id)
+            UserBalance::where('user_id',$this->order->user_id)
                 ->where('coin_type',$coin_type)
                 ->increment('total_balance', $block_balance);
 
+            OrderService::log([
+                "order_id"=>$this->order->id,
+                "message"=>\GuzzleHttp\json_encode(["message"=>'buyer increment','balance'=>$block_balance]),
+                "status"=>0
+            ]);
 
         }
 

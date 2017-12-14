@@ -84,15 +84,16 @@ $app->group('/api/v2', function () use ($container) {
 
     })->add($container->get('jwt.middleware'));
 
+    $this->group('/im', function () {
+        $this->post('/message/send', ['api.im', 'send']);
+        $this->post('/message/history', ['api.im', 'history']);
+        $this->post('/upload', ['api.im', 'upload']);
+    })->add($container->get('jwt.middleware'));
 
 });
 
 
-$app->group('/chat', function () {
-    $this->post('/message/send', 'api.chat', 'messageSend');
-    $this->post('/message/history', 'api.chat', 'history');
-    $this->post('/upload', 'api.chat', 'upload');
-});
+
 
 
 

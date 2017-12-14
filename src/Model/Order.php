@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Model;
+
 use App\User;
 
 
@@ -26,11 +27,10 @@ use App\User;
 class Order extends Model
 {
     // Attributes.
-    public $timestamps = false;
     protected $table = 'orders';
     protected $fillable = [
         'id', 'order_code', 'ad_id', 'ad_code', 'ad_user_id', 'user_id', 'ad_price', 'amount', 'qty', 'payterm',
-        'finish_time', 'status', 'order_desc', 'buyer_estimate', 'seller_estimate', 'created_at', 'updated_at','coin_type'
+        'finish_time', 'status', 'order_desc', 'buyer_estimate', 'seller_estimate', 'created_at', 'updated_at', 'coin_type'
     ];
     protected $guarded = [];
 
@@ -41,9 +41,12 @@ class Order extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function advertiser(){
+    public function comments()
+    {
 
-        return $this->hasOne('App\User', 'id', 'ad_user_id');
+        return $this->hasMany(OrderComment::class)->orderBy('created_at', 'desc');
+
+        //return $this->hasOne('App\User', 'id', 'ad_user_id');
 
     }
 

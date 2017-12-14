@@ -7,7 +7,7 @@ return [
     'api.user'  => 'App\Controller\Api\UserController',
     'api.advert'  => 'App\Controller\Api\AdvertController',
     'api.order'  => 'App\Controller\Api\OrderController',
-    'api.chat'  => 'App\Controller\Api\ChatController',
+    'api.im'  => 'App\Controller\Api\ImController',
     'api.common'  => 'App\Controller\Api\CommonController',
     'api.wallet'  => 'App\Controller\Api\WalletController',
 

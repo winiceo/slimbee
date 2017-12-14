@@ -17,6 +17,7 @@ use Cartalyst\Sentinel\Checkpoints\ThrottlingException;
 use Cartalyst\Sentinel\Native\SentinelBootstrapper;
 use Cartalyst\Sentinel\Sentinel;
 use Firebase\JWT\JWT;
+use JsonSchema\Validator;
 use Leven\Container;
 use Leven\Log;
 use Leven\View;
@@ -48,7 +49,7 @@ class TestController extends Controller
     /**
      * Annotation combined with phpdoc:
      *
-     * @Inject
+     * @ Inject
      * @var Translator
      */
     protected $translator;
@@ -79,6 +80,28 @@ class TestController extends Controller
 
     public function ok( ){
 
+
+
+       // $data = json_decode(file_get_contents($this->app->getRootDir().'/src/Schema/test.json'));
+
+// Validate
+        $validator = new Validator();
+        $data['id']=[
+            "name"=>333,
+            "price"=>4444
+        ];// stdClass;
+
+        $validator->validate($data, (object)['$ref' => 'file://' . $this->app->getRootDir().'/src/Schema/message.json']);
+
+        if ($validator->isValid()) {
+            echo "The supplied JSON validates against the schema.\n";
+        } else {
+            echo "JSON does not validate. Violations:\n";
+            foreach ($validator->getErrors() as $error) {
+                echo sprintf("[%s] %s\n", $error['property'], $error['message']).'<br>';
+            }
+        }
+        exit;
 
         Container::get('redis')->hset('hset', "aa",\GuzzleHttp\json_encode(['a'=>3333]));
         Log::info('aafasdfsdf');

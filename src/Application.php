@@ -51,7 +51,7 @@ class Application extends App
 
         parent::__construct($container);
         $this->registerControllers($container);
-
+        $container->set('app',$this);
 
        // $this->configureContainer($containerBuilder);
 

@@ -162,4 +162,209 @@
     }
 }
 ```
+## 订单付款
+>POST {{apiurl}}/order/pay
+### 输入
+
+```json
+{
+  "order_id":1 
+}
+```
+### 输出
+
+```json
+{
+    "status": 200,
+    "message": "",
+    "data": {
+        "id": 1,
+        "order_code": "1513182636",
+        "coin_type": 1,
+        "trade_type": 0,
+        "ad_id": 1,
+        "ad_code": "",
+        "ad_user_id": 1,
+        "user_id": 2,
+        "ad_price": 0,
+        "amount": 333,
+        "qty": 100,
+        "payterm": 30,
+        "finish_time": null,
+        "status": 1,
+        "order_desc": null,
+        "buyer_estimate": "",
+        "seller_estimate": "",
+        "created_at": null,
+        "updated_at": "2017-12-14 10:08:56"
+    }
+} 
+```
+
+
+## 订单取消
+>POST {{apiurl}}/order/cancel
+### 输入
+
+```json
+{
+  "order_id":1 
+}
+```
+### 输出
+
+```json
+{
+    "status": 200,
+    "message": "",
+    "data": {
+        "id": 1,
+        "order_code": "1513182636",
+        "coin_type": 1,
+        "trade_type": 0,
+        "ad_id": 1,
+        "ad_code": "",
+        "ad_user_id": 1,
+        "user_id": 2,
+        "ad_price": 0,
+        "amount": 333,
+        "qty": 100,
+        "payterm": 30,
+        "finish_time": null,
+        "status": 1,
+        "order_desc": null,
+        "buyer_estimate": "",
+        "seller_estimate": "",
+        "created_at": null,
+        "updated_at": "2017-12-14 10:08:56"
+    }
+} 
+```
+
+## 订单释放
+
+>POST {{apiurl}}/order/release
+### 输入
+
+```json
+{
+  "order_id":1 
+}
+```
+### 输出
+
+```json
+{
+    "status": 200,
+    "message": "",
+    "data": {
+        "id": 1,
+        "order_code": "1513182636",
+        "coin_type": 1,
+        "trade_type": 0,
+        "ad_id": 1,
+        "ad_code": "",
+        "ad_user_id": 1,
+        "user_id": 2,
+        "ad_price": 0,
+        "amount": 333,
+        "qty": 100,
+        "payterm": 30,
+        "finish_time": null,
+        "status": 1,
+        "order_desc": null,
+        "buyer_estimate": "",
+        "seller_estimate": "",
+        "created_at": null,
+        "updated_at": "2017-12-14 10:08:56"
+    }
+} 
+```
+
+
+## 订单评价
+
+>POST {{apiurl}}/order/comment
+### 输入
+
+```json
+{
+  "order_id":1 
+}
+```
+### 输出
+
+```json
+{
+    "status": 200,
+    "message": "",
+    "data": {
+        "id": 1,
+        "order_code": "1513182636",
+        "coin_type": 1,
+        "trade_type": 0,
+        "ad_id": 1,
+        "ad_code": "",
+        "ad_user_id": 1,
+        "user_id": 2,
+        "ad_price": 0,
+        "amount": 333,
+        "qty": 100,
+        "payterm": 30,
+        "finish_time": null,
+        "status": 1,
+        "order_desc": null,
+        "buyer_estimate": "",
+        "seller_estimate": "",
+        "created_at": null,
+        "updated_at": "2017-12-14 10:08:56"
+    }
+} 
+```
+
+
+## 订单审诉
+
+>POST {{apiurl}}/order/complaint
+### 输入
+
+```json
+{
+  "order_id":1 
+}
+```
+### 输出
+
+```json
+{
+    "status": 200,
+    "message": "",
+    "data": {
+        "id": 1,
+        "order_code": "1513182636",
+        "coin_type": 1,
+        "trade_type": 0,
+        "ad_id": 1,
+        "ad_code": "",
+        "ad_user_id": 1,
+        "user_id": 2,
+        "ad_price": 0,
+        "amount": 333,
+        "qty": 100,
+        "payterm": 30,
+        "finish_time": null,
+        "status": 1,
+        "order_desc": null,
+        "buyer_estimate": "",
+        "seller_estimate": "",
+        "created_at": null,
+        "updated_at": "2017-12-14 10:08:56"
+    }
+} 
+```
+
+
+
+
+
 

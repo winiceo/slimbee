@@ -124,10 +124,15 @@ abstract class Controller
         return $response->withJson($this->formatResponse(), $status);
     }
 
-    protected function success(Response $response, $data, $status = 200)
+    protected function success( )
     {
-        $this->setData($data);
-        return $response->withJson($this->formatResponse(), $status);
+
+        return \Leven\Response::withJson($this->formatResponse(), 200);
+    }
+    protected function toJson( )
+    {
+
+        return \Leven\Response::withJson($this->formatResponse(), 200);
     }
 
 
